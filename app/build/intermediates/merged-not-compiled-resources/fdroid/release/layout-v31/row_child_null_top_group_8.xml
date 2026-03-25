@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<merge>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub8_wrap_wrap" android:layout_gravity="top" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub8_expand_wrap" android:layout_gravity="top" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp"/>
+</merge>

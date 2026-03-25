@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="horizontal" style="@style/Glance.AppWidget.Row">
+    <include layout="@layout/row_child_null_center_vertical_group_0"/>
+</RadioGroup>

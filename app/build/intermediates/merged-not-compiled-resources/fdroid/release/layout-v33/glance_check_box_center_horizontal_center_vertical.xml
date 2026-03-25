@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@id/glanceView" android:layoutDirection="locale" android:layout_gravity="center_horizontal|center_vertical" android:layout_height="wrap_content" android:layout_width="wrap_content" android:textDirection="locale" app:glance_isTopLevelLayout="true" style="@style/Glance.AppWidget.CheckBox">
+        
+    <ViewStub android:id="@id/checkBox" android:layout="@layout/glance_check_box_view" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+    
+</FrameLayout>

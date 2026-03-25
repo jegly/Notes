@@ -1,0 +1,7 @@
+#Wed Mar 25 21:22:01 AEDT 2026
+base.0=/home/user/Downloads/Notes-app/EasyNotes-master/app/build/intermediates/dex/fdroidDebugAndroidTest/mergeProjectDexFdroidDebugAndroidTest/0/classes.dex
+base.1=/home/user/Downloads/Notes-app/EasyNotes-master/app/build/intermediates/dex/fdroidDebugAndroidTest/mergeProjectDexFdroidDebugAndroidTest/6/classes.dex
+path.0=0/classes.dex
+path.1=6/classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex

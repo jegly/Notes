@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<merge>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub5_wrap_wrap" android:layout_gravity="start" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub5_wrap_match" android:layout_gravity="start" android:layout_height="match_parent" android:layout_width="wrap_content"/>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub5_wrap_expand" android:layout_gravity="start" android:layout_height="0dp" android:layout_weight="1" android:layout_width="wrap_content"/>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub5_match_wrap" android:layout_gravity="start" android:layout_height="wrap_content" android:layout_width="match_parent"/>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub5_match_match" android:layout_gravity="start" android:layout_height="match_parent" android:layout_width="match_parent"/>
+    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub5_match_expand" android:layout_gravity="start" android:layout_height="0dp" android:layout_weight="1" android:layout_width="match_parent"/>
+</merge>

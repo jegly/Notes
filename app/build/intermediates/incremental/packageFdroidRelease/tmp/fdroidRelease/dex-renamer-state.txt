@@ -1,0 +1,4 @@
+#Wed Mar 25 21:30:18 AEDT 2026
+base.0=/home/user/Downloads/Notes-app/EasyNotes-master/app/build/intermediates/dex/fdroidRelease/minifyFdroidReleaseWithR8/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

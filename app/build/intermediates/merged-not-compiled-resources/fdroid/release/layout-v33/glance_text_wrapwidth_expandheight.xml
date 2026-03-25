@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@id/glanceView" android:layoutDirection="locale" android:layout_height="0dp" android:layout_weight="1" android:layout_width="wrap_content" android:textDirection="locale" app:glance_isTopLevelLayout="true" style="@style/Glance.AppWidget.Text"/>

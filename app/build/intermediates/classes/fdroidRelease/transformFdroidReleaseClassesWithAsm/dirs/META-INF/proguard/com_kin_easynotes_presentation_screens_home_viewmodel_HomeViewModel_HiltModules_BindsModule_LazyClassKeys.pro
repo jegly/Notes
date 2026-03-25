@@ -1,0 +1,1 @@
+-keep,allowobfuscation,allowshrinking class com.kin.easynotes.presentation.screens.home.viewmodel.HomeViewModel
