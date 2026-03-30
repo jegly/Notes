@@ -108,8 +108,9 @@
 │   APP LOCK / PROCESS KILL                                               │
 │     └─> Master key wiped from memory                                   │
 │           └─> DB contains only ciphertext                              │
-│                 └─> Login required on next open                         │
-│                                                                         │
+│                 └─> Login required on next open                        │
+│          
+│ sha256:fac5572eb27f9110929a09deb6786ea0810c35c1fe006b016ae7424cfaa13339
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
