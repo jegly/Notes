@@ -1,4 +1,3 @@
-
 <p align="center"><pre>
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -15,7 +14,7 @@
 /\     S*S    S*S   SSSbs_sdSSS        S*S        SSSbs  sSS*S  /\
 \/     S*S    SSS    YSSP~YSSY         S*S         YSSP  YSS'   \/
 /\     SP                              SP                       /\
-\/     Y                               Y                        \/
+\/     Y                              Y                        \/
 /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/                  
                                               
@@ -79,51 +78,100 @@
 
 ## SECURITY MODEL
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                                                                         │
-│   APP OPENS                                                             │
-│     └─> Login screen                                                    │
-│           └─> Password verified against stored PBKDF2 hash             │
-│                 └─> PBKDF2-HMAC-SHA256 / 120,000 iterations            │
-│                       └─> AES-256-GCM master key derived               │
-│                             └─> Key cached in memory for session        │
-│                                   └─> Notes decrypted on the fly       │
-│                                                                         │
-│   EVERY NOTE WRITE                                                      │
-│     └─> AES-256-GCM                                                     │
-│           └─> Fresh random 96-bit nonce per write                      │
-│                 └─> GCM authentication tag detects tampering            │
-│                                                                         │
-│   BACKUP EXPORT                                                         │
-│     └─> Zip encrypted with session password (AES-256-CBC, PBKDF2)     │
-│           └─> Notes inside DB already AES-256-GCM encrypted            │
-│                 └─> Double protected                                    │
-│                                                                         │
-│   RESTORE ON FRESH DEVICE                                               │
-│     └─> Enter password -> decrypts zip                                  │
-│           └─> Same password decrypts notes in restored DB              │
-│                 └─> Different password? Notes re-encrypted to current  │
-│                                                                         │
-│   APP LOCK / PROCESS KILL                                               │
-│     └─> Master key wiped from memory                                   │
-│           └─> DB contains only ciphertext                              │
-│                 └─> Login required on next open                        │
-│          
-│ sha256:fac5572eb27f9110929a09deb6786ea0810c35c1fe006b016ae7424cfaa13339
-└─────────────────────────────────────────────────────────────────────────┘
-```
+### Version 1.7.1 (Legacy - Deprecated)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  PLANNED FOR v2.0                                                       │
-├─────────────────────────────────────────────────────────────────────────┤
-│  Argon2id key derivation — memory-hard, GPU-resistant                  │
-│  Auto-lock after configurable timeout                                   │
-│  Clipboard auto-clear after copying note content                        │
-│  In-memory zeroization of decrypted content on lock                    │
+│  PASSWORD VERIFICATION                                                  │
+│    └─> PBKDF2-HMAC-SHA256 / 120,000 iterations                         │
+│         └─> CPU-only — highly parallelizable on GPUs/ASICs             │
+│                                                                         │
+│  KEY MANAGEMENT                                                         │
+│    └─> AES-256-GCM master key derived from password via PBKDF2         │
+│         └─> Key material exists in JVM heap as SecretKey object        │
+│              └─> Accessible to memory dump on rooted device            │
+│                                                                         │
+│  SESSION LIFECYCLE                                                      │
+│    └─> Key cached in memory for session duration                       │
+│         └─> Auto-lock only on process kill — no timeout                │
+│              └─> Notes list stays in RAM when app backgrounds          │
+│                                                                         │
+│  BACKUP                                                                 │
+│    └─> Zip encrypted with session password (AES-256-CBC, PBKDF2)       │
+│         └─> Notes inside already AES-256-GCM encrypted                 │
+│              └─> False confidence — data still extractable with key    │
+│                                                                         │
+│  DEVICE SECURITY                                                        │
+│    └─> No screen lock enforcement                                      │
+│         └─> App runs on devices with no PIN/password                   │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Version 2.0.0 (Current - Recommended)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  PASSWORD VERIFICATION                                                  │
+│    └─> Argon2id — 64MB RAM / 3 iterations                              │
+│         └─> Memory-hard — GPU/ASIC resistant                           │
+│              └─> Winner of Password Hashing Competition                │
+│                                                                         │
+│  KEY MANAGEMENT (Hardware-Backed)                                       │
+│    └─> AES-256-GCM keys generated inside TEE/StrongBox                 │
+│         └─> Non-extractable — keys never leave secure hardware         │
+│              └─> Raw key bytes never enter JVM heap                    │
+│                   └─> Extraction impossible even with root access      │
+│                                                                         │
+│  BIOMETRICS                                                             │
+│    └─> Full androidx.biometric framework support                       │
+│         └─> Fingerprint / Face / System PIN/Pattern                    │
+│              └─> Authorizes sessions without exposing master passcode  │
+│                                                                         │
+│  SESSION LIFECYCLE                                                      │
+│    └─> Auto-lock engine — configurable timer (1, 5, 15, 30 min)        │
+│         └─> Memory zeroization on lock                                 │
+│              └─> Decrypted notes wiped from RAM explicitly             │
+│                   └─> Session tokens cleared                           │
+│                                                                         │
+│  BACKUP STRATEGY                                                        │
+│    └─> Device-bound — keys tied to hardware                            │
+│         └─> Traditional cloud/ADB backups disabled                     │
+│              └─> Honest security — data stays on device                │
+│                   └─> Plaintext export available (with security warning)│
+│                                                                         │
+│  DEVICE SECURITY                                                        │
+│    └─> Screen lock enforced at OS level                                │
+│         └─> App refuses to run if device lacks PIN/pattern/password    │
+│              └─> Ensures StrongBox/TEE has secure foundation           │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## SECURITY EVOLUTION: V1 → V2
+
+| Feature | Old Model (V1.7.1) | New Model (V2.0.0) |
+| :--- | :--- | :--- |
+| **Password Hashing** | PBKDF2-HMAC-SHA256 (120k iterations) | Argon2id (64MB RAM / 3 iterations) |
+| **GPU/ASIC Resistance** | Weak — CPU-only, highly parallelizable | Strong — Memory-hard, prevents mass cracking |
+| **AES Key Generation** | Derived from password in software | Hardware-generated (TEE/StrongBox) |
+| **Key Extraction** | Possible via Root + Memory Dump | Physically impossible — key never leaves hardware |
+| **JVM Heap Safety** | Key material exists in JVM memory | Zero-leakage — raw key bytes never enter heap |
+| **Biometrics** | Not supported | Full support (Fingerprint, PIN, Pattern) |
+| **Auto-Lock** | None (process kill only) | Configurable (1, 5, 15, 30 min, or never) |
+| **Memory Cleanup** | Notes kept in RAM while backgrounded | Explicit zeroization — wiped from RAM on lock |
+| **Device Security** | No enforcement | Mandatory screen lock — refuses to run if insecure |
+| **Backup Strategy** | Zip-based (false confidence) | Honest device-binding — data stays on-device |
+
+### Key Improvements Summary
+
+**1. From Software to Hardware:** The "Root of Trust" moved from a software-derived password to the device's security chip (StrongBox/TEE). Even with full root access, an attacker cannot extract the encryption key.
+
+**2. GPU Protection:** Argon2id makes brute-force attacks prohibitively expensive. Each password guess requires 64MB of dedicated RAM, rendering specialized hacking hardware useless.
+
+**3. RAM Forensics Mitigation:** V1 kept decrypted notes and encryption keys in phone RAM — a memory dump during background state could reveal everything. V2 explicitly zeroizes this memory when the app locks.
+
+**4. Enforced Hygiene:** The app refuses to run unless the user has a system PIN or pattern, ensuring StrongBox/TEE has a secure foundation.
 
 ---
 
