@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ListView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:divider="@null" android:id="@id/glanceView" android:layoutDirection="locale" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp" android:listSelector="@android:color/transparent" android:theme="@style/Glance.AppWidget.Theme.ListChildren" app:glance_isTopLevelLayout="true" style="@style/Glance.AppWidget.List"/>

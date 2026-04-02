@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/relativeLayout" android:layout_height="0dp" android:layout_weight="1" android:layout_width="wrap_content" android:tag="glanceComplexLayout">
-    <FrameLayout android:id="@id/sizeView" android:layout_height="wrap_content" android:layout_width="wrap_content" android:visibility="invisible">
-        <ViewStub android:id="@id/sizeViewStub" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-    </FrameLayout>
-    <ViewStub android:id="@id/glanceViewStub" android:layout_alignLeft="@id/sizeView" android:layout_alignRight="@id/sizeView" android:layout_height="match_parent" android:layout_width="0dp"/>
-</RelativeLayout>

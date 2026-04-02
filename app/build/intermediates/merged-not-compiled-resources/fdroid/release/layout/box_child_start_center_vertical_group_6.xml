@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<merge>
-    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub6_wrap_wrap" android:layout_gravity="start|center_vertical" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub6_wrap_match" android:layout_gravity="start|center_vertical" android:layout_height="match_parent" android:layout_width="wrap_content"/>
-    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub6_match_wrap" android:layout_gravity="start|center_vertical" android:layout_height="wrap_content" android:layout_width="match_parent"/>
-    <ViewStub xmlns:android="http://schemas.android.com/apk/res/android" android:id="@id/childStub6_match_match" android:layout_gravity="start|center_vertical" android:layout_height="match_parent" android:layout_width="match_parent"/>
-</merge>

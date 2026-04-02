@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:gravity="center" android:id="@id/glanceView" android:layoutDirection="locale" android:layout_gravity="start|bottom" android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="horizontal" android:tag="glanceCompoundButton" app:glance_isTopLevelLayout="true" style="@style/Glance.AppWidget.RadioButton">
-        
-    <ViewStub android:id="@id/radioIcon" android:layout="@layout/glance_radio_icon" android:layout_height="32dp" android:layout_width="32dp"/>
-        
-    <ViewStub android:id="@id/radioText" android:layout="@layout/glance_radio_text" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp"/>
-    
-</LinearLayout>

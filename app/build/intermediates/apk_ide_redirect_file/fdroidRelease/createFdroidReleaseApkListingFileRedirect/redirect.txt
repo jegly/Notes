@@ -1,2 +1,0 @@
-#- File Locator -
-listingFile=../../../../../fdroid/release/output-metadata.json

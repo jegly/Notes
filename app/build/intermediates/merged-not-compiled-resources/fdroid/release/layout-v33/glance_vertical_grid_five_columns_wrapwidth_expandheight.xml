@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<GridView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:divider="@null" android:id="@id/glanceView" android:layoutDirection="locale" android:layout_height="0dp" android:layout_weight="1" android:layout_width="wrap_content" android:listSelector="@android:color/transparent" android:numColumns="5" android:theme="@style/Glance.AppWidget.Theme.GridChildren" app:glance_isTopLevelLayout="true" style="@style/Glance.AppWidget.VerticalGrid"/>

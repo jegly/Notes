@@ -1,4 +1,0 @@
-com.kin.easynotes.test.app-fdroid-0 /home/user/Downloads/Notes-app/EasyNotes-master/app/build/generated/res/resValues/androidTest/fdroid/debug
-com.kin.easynotes.test.app-mergeFdroidDebugAndroidTestResources-1 /home/user/Downloads/Notes-app/EasyNotes-master/app/build/intermediates/incremental/fdroidDebugAndroidTest/mergeFdroidDebugAndroidTestResources/merged.dir
-com.kin.easynotes.test.app-mergeFdroidDebugAndroidTestResources-2 /home/user/Downloads/Notes-app/EasyNotes-master/app/build/intermediates/incremental/fdroidDebugAndroidTest/mergeFdroidDebugAndroidTestResources/stripped.dir
-com.kin.easynotes.test.app-fdroidDebugAndroidTest-3 /home/user/Downloads/Notes-app/EasyNotes-master/app/build/intermediates/merged_res/fdroidDebugAndroidTest/mergeFdroidDebugAndroidTestResources
