@@ -1,1 +1,0 @@
-Súkromná aplikácia poznámok s podporou Material, Markdown.
