@@ -163,7 +163,7 @@
 │  Sort by date                                                           │
 │  Dark / light / AMOLED themes with Material You dynamic colour         │
 │  Per-note font size and monospace font option                           │
-│  Multi-language support                                                 │
+│                                                                         │
 │  Minimalistic mode                                                      │
 │  Swipe to edit / view toggle                                            │
 └─────────────────────────────────────────────────────────────────────────┘
