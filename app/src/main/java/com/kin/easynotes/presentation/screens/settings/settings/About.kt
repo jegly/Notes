@@ -1,10 +1,16 @@
 package com.kin.easynotes.presentation.screens.settings.settings
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kin.easynotes.R
 import com.kin.easynotes.presentation.screens.settings.SettingsScaffold
@@ -14,6 +20,8 @@ import com.kin.easynotes.presentation.screens.settings.widgets.SettingsBox
 
 @Composable
 fun AboutScreen(navController: NavController, settingsViewModel: SettingsViewModel) {
+    val securityLevel = remember { settingsViewModel.keystoreManager.securityLevelDescription() }
+
     SettingsScaffold(
         settingsViewModel = settingsViewModel,
         title = stringResource(id = R.string.about),
@@ -27,8 +35,19 @@ fun AboutScreen(navController: NavController, settingsViewModel: SettingsViewMod
                     description = settingsViewModel.version,
                     icon = Icons.Rounded.Info,
                     actionType = ActionType.TEXT,
-                    radius = shapeManager(isBoth = true, radius = settingsViewModel.settings.value.cornerRadius),
+                    radius = shapeManager(isFirst = true, radius = settingsViewModel.settings.value.cornerRadius),
                 )
+            }
+            item {
+                SettingsBox(
+                    settingsViewModel = settingsViewModel,
+                    title = stringResource(id = R.string.key_security_level),
+                    description = securityLevel,
+                    icon = Icons.Rounded.Shield,
+                    actionType = ActionType.TEXT,
+                    radius = shapeManager(isLast = true, radius = settingsViewModel.settings.value.cornerRadius),
+                )
+                Spacer(modifier = Modifier.height(18.dp))
             }
         }
     }

@@ -30,8 +30,8 @@ android {
         applicationId = "com.notes.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15
-        versionName = "1.7.1"
+        versionCode = 20
+        versionName = "2.0"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -80,11 +80,15 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
     buildToolsVersion = "36.0.0"
 }
 
 dependencies {
+    implementation(libs.argon2kt)
     implementation(libs.m3color)
     implementation(libs.androidx.biometric.ktx)
     implementation(libs.androidx.glance)

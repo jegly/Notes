@@ -184,8 +184,16 @@
     <string name="change_password">Change password</string>
     <string name="change_password_description">Change your encryption and app lock password</string>
     <string name="current_password">Current password</string>
-    <string name="setup_password_description">Set a password to encrypt your notes and lock the app. Use the same password to restore backups.</string>
+    <string name="setup_password_description">Set a password to encrypt your notes and lock the app.</string>
     <string name="encrypting_notes">Encrypting notes…</string>
-    <string name="restore_password_title">Enter backup password</string>
-    <string name="restore_password_description">Enter the password that was used when this backup was created. This may be different from your current password if restoring from another device.</string>
+    <string name="error_no_screen_lock">A device screen lock (PIN, pattern or password) is required to use this app. Please set one in your device Settings, then return here.</string>
+    <string name="auto_lock">Auto-lock</string>
+    <string name="key_security_level">Key security</string>
+    <string name="export_import">Export / Import</string>
+    <string name="description_export_import">Export and import notes as text</string>
+    <string name="export_txt_title">Export notes as text</string>
+    <string name="export_txt_description">Saves all notes as a plain text file. Use this to migrate to a new device.</string>
+    <string name="export_warning_title">Plaintext export</string>
+    <string name="export_warning_body">Your notes will be exported as unencrypted plain text. Anyone with access to the file can read your notes. Only proceed if you understand this risk.</string>
+    <string name="export_confirm">Export anyway</string>
 </resources>

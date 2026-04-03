@@ -98,10 +98,8 @@ fun MainSettings(settingsViewModel: SettingsViewModel, navController: NavControl
                 SectionBlock(
                     listOf(
                         SettingSection(
-                            title = stringResource(id = R.string.backup),
-                            features = listOf(
-                                stringResource(R.string.description_cloud)
-                            ),
+                            title = stringResource(id = R.string.export_import),
+                            features = listOf(stringResource(R.string.description_export_import)),
                             icon = Icons.Rounded.Cloud,
                             onClick = { navController.navigate(NavRoutes.Cloud.route) }
                         ),

@@ -57,15 +57,12 @@ class MainActivity : AppCompatActivity() {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     navController = rememberNavController()
 
-                    // Security: if app is locked and a widget tap delivered a noteId,
-                    // store it as pending — LoginScreen will navigate to it after auth
-                    val isLocked = settingsViewModel!!.settings.value.isSetup
+                    val isLocked = settingsViewModel!!.settings.value.isSetup &&
+                                   settingsViewModel!!.sessionPassword == null
                     val safeNoteId = if (isLocked && rawNoteId != -1) {
                         settingsViewModel!!.pendingWidgetNoteId = rawNoteId
                         -1
-                    } else {
-                        rawNoteId
-                    }
+                    } else rawNoteId
 
                     AppNavHost(
                         settingsViewModel!!,
@@ -80,9 +77,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Re-lock when app resumes if session password is gone (e.g. process killed)
-        settingsViewModel?.let {
-            if (it.settings.value.isSetup && it.sessionPassword == null) {
+        settingsViewModel?.let { vm ->
+            vm.cancelAutoLock()
+            vm.onAppForeground()
+            // Re-lock if session was cleared while in background
+            if (vm.settings.value.isSetup && vm.sessionPassword == null) {
                 if (::navController.isInitialized) {
                     navController.navigate(NavRoutes.Login.route) {
                         popUpTo(0) { inclusive = true }
@@ -90,5 +89,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        settingsViewModel?.onAppBackground()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // onPause already started the timer — nothing extra needed
     }
 }

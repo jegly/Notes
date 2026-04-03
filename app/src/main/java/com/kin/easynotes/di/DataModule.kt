@@ -1,14 +1,15 @@
 package com.kin.easynotes.di
 
 import android.app.Application
-import android.os.Handler
 import android.content.Context
+import android.os.Handler
 import android.os.Looper
 import com.kin.easynotes.data.local.database.NoteDatabaseProvider
 import com.kin.easynotes.data.repository.ImportExportRepository
 import com.kin.easynotes.data.repository.NoteRepositoryImpl
 import com.kin.easynotes.data.repository.SettingsRepositoryImpl
 import com.kin.easynotes.presentation.components.EncryptionHelper
+import com.kin.easynotes.security.KeystoreManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,62 +36,61 @@ object ApplicationModule {
     @Singleton
     @WidgetCoroutineScope
     fun providesWidgetCoroutineScope(): CoroutineScope = CoroutineScope(
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     )
 
     @Provides
     @Singleton
-    fun provideNoteDatabaseProvider(application: Application): NoteDatabaseProvider = NoteDatabaseProvider(application)
+    fun provideNoteDatabaseProvider(application: Application): NoteDatabaseProvider =
+        NoteDatabaseProvider(application)
 
     @Provides
     @Singleton
-    fun provideCoroutineScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    fun provideCoroutineScope(): CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     @Provides
     fun provideMutex(): Mutex = Mutex()
 
     @Provides
     @Singleton
-    fun provideExecutorCoroutineDispatcher(): ExecutorCoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    fun provideExecutorCoroutineDispatcher(): ExecutorCoroutineDispatcher =
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     @Provides
     @Singleton
-    fun provideNoteRepository(noteDatabaseProvider: NoteDatabaseProvider): NoteRepositoryImpl {
-        return NoteRepositoryImpl(noteDatabaseProvider)
-    }
+    fun provideNoteRepository(noteDatabaseProvider: NoteDatabaseProvider): NoteRepositoryImpl =
+        NoteRepositoryImpl(noteDatabaseProvider)
 
     @Provides
     @Singleton
-    fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepositoryImpl {
-        return SettingsRepositoryImpl(context)
-    }
+    fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepositoryImpl =
+        SettingsRepositoryImpl(context)
 
     @Provides
     @Singleton
-    fun provideBackupRepository(
-        noteDatabaseProvider: NoteDatabaseProvider,
-        application: Application,
+    fun provideImportExportRepository(
+        @ApplicationContext context: Context,
         mutex: Mutex,
         coroutineScope: CoroutineScope,
         executorCoroutineDispatcher: ExecutorCoroutineDispatcher,
-    ): ImportExportRepository {
-        return ImportExportRepository(
-            provider = noteDatabaseProvider,
-            context = application,
-            mutex = mutex,
-            scope = coroutineScope,
-            dispatcher = executorCoroutineDispatcher
-        )
-    }
+    ): ImportExportRepository = ImportExportRepository(
+        context    = context,
+        mutex      = mutex,
+        scope      = coroutineScope,
+        dispatcher = executorCoroutineDispatcher
+    )
 
     @Provides
     @Singleton
-    fun provideEncryptionHelper(): EncryptionHelper {
-        return EncryptionHelper(StringBuilder())
-    }
+    fun provideKeystoreManager(@ApplicationContext context: Context): KeystoreManager =
+        KeystoreManager(context)
 
     @Provides
-    fun provideHandler(): Handler {
-        return Handler(Looper.getMainLooper())
-    }
+    @Singleton
+    fun provideEncryptionHelper(keystoreManager: KeystoreManager): EncryptionHelper =
+        EncryptionHelper(StringBuilder(), keystoreManager)
+
+    @Provides
+    fun provideHandler(): Handler = Handler(Looper.getMainLooper())
 }

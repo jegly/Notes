@@ -26,7 +26,7 @@ class NoteUseCase @Inject constructor(
     private val noteRepository: NoteRepositoryImpl,
     private val coroutineScope: CoroutineScope,
     private val encryptionHelper: EncryptionHelper,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     var notes: List<Note> by mutableStateOf(emptyList())
         private set
@@ -125,6 +125,19 @@ class NoteUseCase @Inject constructor(
     }
 
     /**
+     * Zeroize in-memory decrypted note content when the app locks.
+     * Clears the notes list so decrypted text doesn't linger in Compose state.
+     * The JVM GC cannot be forced, but removing references is the best we can do
+     * without native code.
+     */
+    fun zeroize() {
+        observeJob?.cancel()
+        observeJob = null
+        notes = emptyList()
+        decryptionResult = DecryptionResult.LOADING
+    }
+
+    /**
      * Re-encrypts all notes in the database using the current password in EncryptionHelper.
      * Call this after changing the password (old password used to decrypt, new already loaded).
      * Also call on first setup to encrypt any pre-existing plain notes.
@@ -136,7 +149,7 @@ class NoteUseCase @Inject constructor(
             val plainDesc: String
             if (note.encrypted && oldPassword != null) {
                 // Decrypt with old password first
-                val tempHelper = EncryptionHelper(StringBuilder(oldPassword))
+                val tempHelper = EncryptionHelper(StringBuilder(oldPassword), encryptionHelper.keystoreManager)
                 val (name, _) = tempHelper.decrypt(note.name)
                 val (desc, _) = tempHelper.decrypt(note.description)
                 plainName = name ?: note.name
