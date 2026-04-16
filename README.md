@@ -32,7 +32,7 @@
 ```
 
 ---
-
+![GitHub all releases](https://img.shields.io/github/downloads/jegly/Notes/total)
 ## WHAT'S DIFFERENT FROM EASYNOTES
 
 ```
