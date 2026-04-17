@@ -34,7 +34,7 @@
 ---
 ![GitHub all releases](https://img.shields.io/github/downloads/jegly/Notes/total)
 ## WHAT'S DIFFERENT FROM EASYNOTES
-
+sha256:4977d9cb18e0e2060b67cfebdaba6e76e51bb7bacc3f79a70a114e39ab142a11
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  REMOVED                                                                │
