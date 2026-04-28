@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.notes.app.debug",
+  "variantName": "fdroidDebug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 21,
+      "versionName": "2.0.1",
+      "outputFile": "app-fdroid-debug.apk"
+    }
+  ],
+  "elementType": "File",
+  "minSdkVersionForDexing": 26
+}

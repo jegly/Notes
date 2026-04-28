@@ -1,0 +1,11 @@
+com.kin.easynotes.app-fdroid-0 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/generated/res/resValues/fdroid/release
+com.kin.easynotes.app-updated_navigation_xml-1 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/generated/updated_navigation_xml/fdroidRelease
+com.kin.easynotes.app-packageFdroidReleaseResources-2 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/intermediates/incremental/fdroidRelease/packageFdroidReleaseResources/merged.dir
+com.kin.easynotes.app-packageFdroidReleaseResources-3 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/intermediates/incremental/fdroidRelease/packageFdroidReleaseResources/stripped.dir
+com.kin.easynotes.app-fdroid-4 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/intermediates/merged-not-compiled-resources/fdroid/release
+com.kin.easynotes.app-fdroidRelease-5 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/intermediates/merged_res/fdroidRelease/mergeFdroidReleaseResources
+com.kin.easynotes.app-fdroid-6 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/src/fdroid/res
+com.kin.easynotes.app-fdroidRelease-7 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/src/fdroidRelease/res
+com.kin.easynotes.app-main-8 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/src/main/res
+com.kin.easynotes.app-release-9 /home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/src/release/res
+gradleHome-0 /home/computer/.gradle

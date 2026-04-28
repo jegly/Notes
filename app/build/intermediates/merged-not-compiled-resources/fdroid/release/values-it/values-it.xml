@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="Behavior">Comportamento</string>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Portami a casa"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Torna indietro"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Altre opzioni"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Fine"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Mostra tutto"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Scelta di un\'app"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"OFF"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"ON"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"ALT +"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"CTRL +"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"CANC"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"INVIO"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"FUNZIONE +"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"META +"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"MAIUSC +"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"SPAZIO"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"SYM +"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"MENU +"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Cerca…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Cancella query"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Query di ricerca"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Cerca"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Invia query"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Ricerca vocale"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Condividi con"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Condividi tramite <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Comprimi"</string>
+    <string name="about">Informazioni</string>
+    <string name="agree">D\'accordo</string>
+    <string name="alert_text">Sei sicuro di voler eliminare le note selezionate</string>
+    <string name="always_edit">Priorità alla modalità modifica</string>
+    <string name="always_edit_description">Entra in modalità modifica nelle note esistenti</string>
+    <string name="amoled_colors">Colori amoled</string>
+    <string name="amoled_colors_description">Utilizza il colore nero come sfondo</string>
+    <string name="app_lock">Blocco app</string>
+    <string name="app_lock_description">Blocca l\'app con una password</string>
+    <string name="app_name">Notes</string>
+    <string name="authorize_fingerprint">Richiedi l\'impronta digitale all\'avvio</string>
+    <string name="authorize_passcode">Richiedi il passcode all\'avvio</string>
+    <string name="authorize_pattern">Chiedi un pattern all\'avvio</string>
+    <string name="backup">Backup</string>
+    <string name="backup_description">Salva tutte le note in un file</string>
+    <string msgid="2102429900219199821" name="biometric_or_screen_lock_prompt_message">"Per continuare, devi usare i tuoi dati biometrici o il tuo blocco schermo"</string>
+    <string msgid="1160635338192065472" name="biometric_prompt_message">"Usa i tuoi dati biometrici per continuare"</string>
+    <string name="build_type">Tipo di build</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Rispondi"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Rifiuta"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Riaggancia"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Chiamata in arrivo"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Chiamata in corso"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Applicazione filtro a chiamata in arrivo"</string>
+    <string name="cancel">Annulla</string>
+    <string name="characters">Caratteri</string>
+    <string msgid="406453423630273620" name="close_drawer">"Chiudi il menu di navigazione"</string>
+    <string msgid="7573152094250666567" name="close_sheet">"Chiudi il foglio"</string>
+    <string name="cloud">Cloud</string>
+    <string name="color_styles"><![CDATA[Colori e stili]]></string>
+    <string name="column_view">Vista colonna</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"Utilizza password"</string>
+    <string name="contributors">Contributo</string>
+    <string name="copy">Copia</string>
+    <string name="created_time">Data creazione</string>
+    <string name="cryptocurrency">Cryptovaluta</string>
+    <string name="dark_theme">Tema scuro</string>
+    <string name="dark_theme_description">Alterna tra colori chiari e scuri</string>
+    <string name="database">Database</string>
+    <string msgid="8038256446254964252" name="default_error_message">"Valore non valido"</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"Errore sconosciuto"</string>
+    <string msgid="6312721426453364202" name="default_popup_window_title">"Finestra popup"</string>
+    <string name="delete">Elimina</string>
+    <string name="description">Descrizione</string>
+    <string name="description_about">Versione • Sviluppatori • Licenza</string>
+    <string name="description_cloud">NextCloud • locale • Crittografia</string>
+    <string name="description_color_styles">Temi • Dimensioni • Caratteri</string>
+    <string name="description_history">Cronologia • Ripristina</string>
+    <string name="description_language">Caratteri • Lingua</string>
+    <string name="description_markdown">Supporto • Immagini</string>
+    <string name="description_tools">Creato • Elimina tutto</string>
+    <string name="description_widgets">Widget • Markdown</string>
+    <string name="detabase_restore_error">La password non è valida o il database non è cifrato</string>
+    <string name="disable_swipe_edit">Disabilita lo swipe</string>
+    <string name="disable_swipe_edit_description">"Disabilita lo scorrimento per l\'anteprima in modalità di modifica "</string>
+    <string name="discord">Discord</string>
+    <string name="display">Schermo</string>
+    <string name="donate_me">Donami :)</string>
+    <string name="donators">Dona</string>
+    <string msgid="1890207353314751437" name="dropdown_menu">"Menu a discesa"</string>
+    <string name="dynamic_colors">Colori dinamici</string>
+    <string name="dynamic_colors_description">Seleziona colori a seconda dello sfondo</string>
+    <string name="email">Email</string>
+    <string name="encrypt_databse">Cifra il database</string>
+    <string name="encrypt_databse_description">Cifra il database durante il backup</string>
+    <string name="enter_password">Inserisci Passcode</string>
+    <string name="extreme_amoled_mode">Colori Amoled estremi</string>
+    <string name="extreme_amoled_mode_description">Ottimizzazione estrema della batteria</string>
+    <string msgid="4562557128765735254" name="face_or_screen_lock_prompt_message">"Per continuare, devi usare il tuo volto o il tuo blocco schermo"</string>
+    <string msgid="2282389249605674226" name="face_prompt_message">"Usa il tuo volto per continuare"</string>
+    <string name="feature">Richiedi aggiunte</string>
+    <string name="file_import_description">Importa altri documenti di testo come note</string>
+    <string name="file_import_error">Impossibile importare</string>
+    <string name="file_import_partial_error">Importazione di alcuni documenti fallita</string>
+    <string name="file_import_success">Importato correttamente</string>
+    <string name="file_import_title">Importa</string>
+    <string name="fingerprint">Impronta digitale</string>
+    <string msgid="5462024216548165325" name="fingerprint_dialog_icon_description">"Icona dell\'impronta"</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"Tocca sensore impronte"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"Hardware per l\'impronta non disponibile."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"Questo dispositivo non è dotato di sensore di impronte"</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"È stato effettuato un numero eccessivo di tentativi. Riprova più tardi."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"Nessuna impronta digitale registrata."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"Operazione di autenticazione dell\'impronta annullata dall\'utente."</string>
+    <string name="fingerprint_name">Autenticazione richiesta</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"Non riconosciuta"</string>
+    <string msgid="8382576858490514495" name="fingerprint_or_screen_lock_prompt_message">"Per continuare, devi usare la tua impronta o il tuo blocco schermo"</string>
+    <string msgid="7449360011861769080" name="fingerprint_prompt_message">"Usa la tua impronta per continuare"</string>
+    <string name="font_size">Dimensione carattere</string>
+    <string name="font_size_description">Cambia la dimensione del testo nelle note</string>
+    <string name="font_size_preview_text">Così è come appariranno le tue note con la dimensione del testo selezionata.</string>
+    <string name="font_size_preview_title">Anteprima</string>
+    <string name="font_size_value">Dimensione del carattere: %1$d</string>
+    <string name="gallery_sync">Sincronizzazione della galleria</string>
+    <string name="gallery_sync_description">Elimina le immagini dalla memoria dell\'app quando vengono rimosse dalla galleria</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"Non hai impostato PIN, sequenza o password."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"Questo dispositivo non supporta il PIN, la sequenza o la password."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"Autenticazione annullata dall\'utente."</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text">"Controlla l\'errore esatto con "<b><tt>"adb logcat"</tt></b>", cercando "<b><tt>"GlanceAppWidget"</tt></b></string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"Impossibile mostrare i contenuti"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Errore del widget dell\'app Glance"</b></string>
+    <string name="grid_view">Visualizzazione griglia</string>
+    <string name="history">Cronologia</string>
+    <string name="home_screen">Note</string>
+    <string name="images_supprot">Supporto immagini</string>
+    <string msgid="6827826412747255547" name="in_progress">"In corso"</string>
+    <string msgid="7933458017204019916" name="indeterminate">"Elemento parzialmente selezionato"</string>
+    <string name="information">Informazione</string>
+    <string name="invalid_input">Input invalido</string>
+    <string name="invalid_password">Password non valida</string>
+    <string name="language">Lingua</string>
+    <string name="language_description">Cambia la lingua dell\'app</string>
+    <string name="latest_release">Ultimo rilascio</string>
+    <string name="lock_on_resume">Blocca immediatamente</string>
+    <string name="lock_on_resume_description">Blocca immediatamente quando l\'app viene riavviata</string>
+    <string name="lock_pattern">Inserisci pattern</string>
+    <string name="locked">è bloccato</string>
+    <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"Comprimi il riquadro inferiore"</string>
+    <string msgid="1555567894577437024" name="m3c_bottom_sheet_dismiss_description">"Chiudi il riquadro inferiore"</string>
+    <string msgid="8403354765404029791" name="m3c_bottom_sheet_drag_handle_description">"Punto di trascinamento"</string>
+    <string msgid="6670819569745899763" name="m3c_bottom_sheet_expand_description">"Espandi il riquadro inferiore"</string>
+    <string msgid="3010635850035863127" name="m3c_bottom_sheet_pane_title">"Riquadro inferiore"</string>
+    <string msgid="8166741421776570875" name="m3c_date_input_headline">"Data inserita"</string>
+    <string msgid="229313757840775812" name="m3c_date_input_headline_description">"Data inserita: %1$s"</string>
+    <string msgid="6116910750161463197" name="m3c_date_input_invalid_for_pattern">"La data non corrisponde al pattern previsto: %1$s"</string>
+    <string msgid="2521768508935305279" name="m3c_date_input_invalid_not_allowed">"Data non consentita: %1$s"</string>
+    <string msgid="7052898923934555305" name="m3c_date_input_invalid_year_range">"La data non rientra nell\'intervallo di anni previsto (%1$s-%2$s)"</string>
+    <string msgid="2895559812010326913" name="m3c_date_input_label">"Data"</string>
+    <string msgid="1237013946323089826" name="m3c_date_input_no_input_description">"Nessuna selezione"</string>
+    <string msgid="7306227249789210568" name="m3c_date_input_title">"Seleziona data"</string>
+    <string msgid="7605002211875882969" name="m3c_date_picker_headline">"Data selezionata"</string>
+    <string msgid="3664277305226978227" name="m3c_date_picker_headline_description">"Selezione attuale: %1$s"</string>
+    <string msgid="8436650776581492840" name="m3c_date_picker_navigate_to_year_description">"Vai all\'anno %1$s"</string>
+    <string msgid="5811000998184572395" name="m3c_date_picker_no_selection_description">"Nessuna selezione"</string>
+    <string msgid="7813882352367152251" name="m3c_date_picker_scroll_to_earlier_years">"Scorri per visualizzare gli anni precedenti"</string>
+    <string msgid="5727367015496556177" name="m3c_date_picker_scroll_to_later_years">"Scorri per visualizzare gli anni successivi"</string>
+    <string msgid="1804346892470238807" name="m3c_date_picker_switch_to_calendar_mode">"Passa alla modalità di immissione calendario"</string>
+    <string msgid="395627960681594326" name="m3c_date_picker_switch_to_day_selection">"Scorri per selezionare un anno o tocca per tornare alla selezione di un giorno"</string>
+    <string msgid="2219746470065162704" name="m3c_date_picker_switch_to_input_mode">"Passa alla modalità di immissione testo"</string>
+    <string msgid="7142101321095356500" name="m3c_date_picker_switch_to_next_month">"Passa al mese successivo"</string>
+    <string msgid="228438865139394590" name="m3c_date_picker_switch_to_previous_month">"Passa al mese precedente"</string>
+    <string msgid="791651718641787594" name="m3c_date_picker_switch_to_year_selection">"Passa alla selezione di un anno"</string>
+    <string msgid="7430790972741451689" name="m3c_date_picker_title">"Seleziona data"</string>
+    <string msgid="3199387177749801575" name="m3c_date_picker_today_description">"Oggi"</string>
+    <string msgid="2068382232816991922" name="m3c_date_picker_year_picker_pane_title">"Selettore dell\'anno visibile"</string>
+    <string msgid="3190049423327661366" name="m3c_date_range_input_invalid_range_input">"Intervallo di date inserito non valido"</string>
+    <string msgid="3148384720560189467" name="m3c_date_range_input_title">"Inserisci date"</string>
+    <string msgid="2138321128465719402" name="m3c_date_range_picker_day_in_range">"Nell\'intervallo"</string>
+    <string msgid="4947636797751277713" name="m3c_date_range_picker_end_headline">"Data di fine"</string>
+    <string msgid="602077859540990149" name="m3c_date_range_picker_scroll_to_next_month">"Scorri per visualizzare il mese successivo"</string>
+    <string msgid="4592174524846109496" name="m3c_date_range_picker_scroll_to_previous_month">"Scorri per visualizzare il mese precedente"</string>
+    <string msgid="4665981448952749820" name="m3c_date_range_picker_start_headline">"Data di inizio"</string>
+    <string msgid="3134165431120340385" name="m3c_date_range_picker_title">"Seleziona date"</string>
+    <string msgid="7617233117134790350" name="m3c_dialog">"Finestra di dialogo"</string>
+    <string msgid="3177828188723359358" name="m3c_dropdown_menu_collapsed">"Compresso"</string>
+    <string msgid="2360841780724299882" name="m3c_dropdown_menu_expanded">"Espanso"</string>
+    <string msgid="8687821690726149911" name="m3c_dropdown_menu_toggle">"Attiva/disattiva menu a discesa"</string>
+    <string msgid="6152806324422087846" name="m3c_search_bar_search">"Cerca"</string>
+    <string msgid="6152755701819882931" name="m3c_snackbar_dismiss">"Chiudi"</string>
+    <string msgid="7655536806087401899" name="m3c_suggestions_available">"Suggerimenti sotto"</string>
+    <string msgid="2786685010796619560" name="m3c_time_picker_am">"AM"</string>
+    <string msgid="2349193472625211372" name="m3c_time_picker_hour">"Ora"</string>
+    <string msgid="9179527532316922345" name="m3c_time_picker_hour_24h_suffix">"%1$d ore"</string>
+    <string msgid="8876759303332837035" name="m3c_time_picker_hour_selection">"Seleziona l\'ora"</string>
+    <string msgid="3458167507790628988" name="m3c_time_picker_hour_suffix">"%1$d in punto"</string>
+    <string msgid="6973808109666874069" name="m3c_time_picker_hour_text_field">"per l\'ora"</string>
+    <string msgid="4313071914266462005" name="m3c_time_picker_minute">"Minuto"</string>
+    <string msgid="4699133535056739733" name="m3c_time_picker_minute_selection">"Seleziona i minuti"</string>
+    <string msgid="5064177921781937179" name="m3c_time_picker_minute_suffix">"%1$d minuti"</string>
+    <string msgid="7661234488295443182" name="m3c_time_picker_minute_text_field">"per i minuti"</string>
+    <string msgid="5865171949528594571" name="m3c_time_picker_period_toggle_description">"Seleziona AM o PM"</string>
+    <string msgid="6616362054113087709" name="m3c_time_picker_pm">"PM"</string>
+    <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"Mostra descrizione comando"</string>
+    <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"Descrizione comando"</string>
+    <string name="make_search_bar_longer">Scala la larghezza della barra di ricerca</string>
+    <string name="make_search_bar_longer_description">Fai in modo che la barra di ricerca abbia la stessa larghezza delle note</string>
+    <string name="markdown">Markdown</string>
+    <string name="markdown_description">Attiva il formato markdown nelle note</string>
+    <string name="minimalistic_mode">Modalità minimalismo</string>
+    <string name="minimalistic_mode_description">Rimuovi i bottoni superiori dalla schermata di modifica</string>
+    <string name="monospace_font">Carattere monospazio</string>
+    <string name="monospace_font_description">Utilizzare il carattere monospazio durante la modifica della nota</string>
+    <string name="name">Nome</string>
+    <string msgid="542007171693138492" name="navigation_menu">"Menu di navigazione"</string>
+    <string name="new_note">Nuova nota</string>
+    <string name="no_created_notes">Nessuna nota creata.</string>
+    <string name="no_found_notes">Nessuna nota trovata.</string>
+    <string msgid="6610465462668679431" name="not_selected">"Opzione non selezionata"</string>
+    <string name="not_supported">Ancora non supportato</string>
+    <string name="notes">Note</string>
+    <string name="others">Altri</string>
+    <string name="passcode">Passcode</string>
+    <string name="password_continue">continua</string>
+    <string name="password_prompt">Inserisci password</string>
+    <string name="pattern">Pattern</string>
+    <string name="pin">Pin (6 numeri)</string>
+    <string name="pinned">In evidenza</string>
+    <string name="privacy">Privacy</string>
+    <string name="radius">Raggio</string>
+    <string name="radius_description">Personalizza il raggio dell\'angolo</string>
+    <string msgid="5941395253238309765" name="range_end">"Fine intervallo"</string>
+    <string msgid="7097486360902471446" name="range_start">"Inizio intervallo"</string>
+    <string name="restore">Ripristina</string>
+    <string name="restore_description">Ripristina le note da un file di backup</string>
+    <string msgid="5659570757430909869" name="screen_lock_prompt_message">"Inserisci il tuo blocco schermo per continuare"</string>
+    <string name="screen_protection">Protezione Schermo</string>
+    <string name="screen_protection_description">Nascondi la schermata nel menù \"recenti\" e disabilita gli screenshots</string>
+    <string name="screen_settings">Impostazioni</string>
+    <string name="search">Cerca</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Cerca"</string>
+    <string name="select_all">Seleziona tutto</string>
+    <string name="select_font">Font</string>
+    <string name="select_note">Seleziona nota</string>
+    <string name="select_radius">Seleziona il raggio</string>
+    <string msgid="6043586758067023" name="selected">"Elemento selezionato"</string>
+    <string name="setup_password">Imposta un passcode</string>
+    <string name="setup_pattern">Imposta un pattern</string>
+    <string name="show_only_title">Mostra solo il titolo</string>
+    <string name="show_only_title_description">Mostra il titolo solo nell\'anteprima</string>
+    <string name="sort_ascending">Ordine ascendente</string>
+    <string name="sort_descending">Ordine decrescente</string>
+    <string name="sort_description">Ordina note per data di creazione</string>
+    <string name="source_code">Codice sorgente</string>
+    <string name="start_project">Supporta il progetto</string>
+    <string msgid="4139871816613051306" name="state_empty">"Vuoto"</string>
+    <string msgid="5834637030682409883" name="state_off">"Off"</string>
+    <string msgid="1490883874751719580" name="state_on">"On"</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="support">Supporto</string>
+    <string name="support_description">Mostra il tuo amore</string>
+    <string name="support_list">Elenco dei sostenitori</string>
+    <string msgid="2561197295334830845" name="switch_role">"Opzione"</string>
+    <string name="system_language">Linga del sistema</string>
+    <string name="system_theme">Tema del sistema</string>
+    <string name="system_theme_description">Adatta il tema dell\'app secondo le impostazioni del sistema</string>
+    <string msgid="1672349317127674378" name="tab">"Scheda"</string>
+    <string msgid="5946805113151406391" name="template_percent">"<ns1:g id="PERCENTAGE">%1$d</ns1:g> percento."</string>
+    <string name="terms_acceptance_body">Premendo Accetto e utilizzando Notes, si accettano i presenti Termini di servizio. Se non si accettano, non utilizzare l\'applicazione.</string>
+    <string name="terms_acceptance_title">1. Accettazione dei Termini</string>
+    <string name="terms_changes_body">Possiamo aggiornare i presenti Termini di servizio di tanto in tanto. L\'uso continuato di Notes dopo eventuali modifiche costituisce l\'accettazione dei termini rivisti.</string>
+    <string name="terms_changes_title">8. Cambiamenti dei Termini</string>
+    <string name="terms_contact_body">Per qualsiasi domanda sui Termini di Servizio o Notes, contattaci a</string>
+    <string name="terms_contact_title">9. Contattaci</string>
+    <string name="terms_disclaimer_body">Notes viene fornita così com\'è, senza alcuna garanzia. Non garantiamo che l\'applicazione sia priva di errori, sicura o ininterrotta.</string>
+    <string name="terms_disclaimer_title">5. Esclusione di Garanzia</string>
+    <string name="terms_effective_date">Data Effettiva</string>
+    <string name="terms_intellectual_property_body">Tutti i diritti di proprietà intellettuale di Notes sono di nostra proprietà o dei nostri licenziatari. L\'uso dell\'applicazione non conferisce all\'utente la proprietà di alcun diritto di proprietà intellettuale.</string>
+    <string name="terms_intellectual_property_title">4. Proprietà Intellettuale</string>
+    <string name="terms_liability_body">Non siamo responsabili di alcun danno che risulti dall\'uso di Notes, inclusi danni diretti, incidentali o consequenziali.</string>
+    <string name="terms_liability_title">6. Limiti di responsabilità</string>
+    <string name="terms_license_body">Notes è distribuito secondo la **GNU General Public License (GPL) versione 3**. Ciò significa che:
+\n
+\n- L\'utente è libero di utilizzare, modificare e condividere l\'applicazione.
+\n- Se si distribuisce l\'applicazione o qualsiasi versione modificata, è necessario distribuire anche il codice sorgente e mantenere la licenza GPL.</string>
+    <string name="terms_license_title">2. Licenza</string>
+    <string name="terms_of_service">Termini di Servizio</string>
+    <string name="terms_privacy_body">Notes non conserva alcun dato personale. Per maggiori informazioni, fare riferimento alla nostra Informativa sulla Privacy disponibile a</string>
+    <string name="terms_privacy_title">10. Informativa sulla Privacy</string>
+    <string name="terms_termination_body">Potremmo terminare o sospendere l\'accesso a Notes in caso di infrazione di questi Termini. In caso di terminazione, il diritto di utilizzo dell\'app cesserà con effetto immediato.</string>
+    <string name="terms_termination_title">7. Terminazione</string>
+    <string name="terms_use_body">L\'utente accetta di utilizzare Notes solo per scopi leciti e in conformità alle presenti Condizioni. L\'utente **non deve **:
+\n
+\n- _Utilizzare l\'applicazione per qualsiasi scopo illegale_.
+\n- Violare i diritti degli altri
+\n- _Interrompere la funzionalità o la sicurezza dell\'applicazione_</string>
+    <string name="terms_use_title">3. Utilizzo dell\'applicazione</string>
+    <string name="tools">Strumenti</string>
+    <string msgid="3765533235322692011" name="tooltip_description">"Descrizione comando"</string>
+    <string msgid="3124740595719787496" name="tooltip_label">"Mostra descrizione comando"</string>
+    <string name="translators">Traduzione</string>
+    <string name="uid">UID</string>
+    <string name="unstable_feature">Instabile</string>
+    <string name="unsuported_image_size">Dimensioni dell\'immagine non supportata (massimo 15mb )</string>
+    <string msgid="6524145989441579428" name="use_biometric_label">"Usa i dati biometrici"</string>
+    <string msgid="5385448280139639016" name="use_biometric_or_screen_lock_label">"Usa i dati biometrici o il blocco schermo"</string>
+    <string msgid="6533512708069459542" name="use_face_label">"Usa il volto"</string>
+    <string msgid="2116180187159450292" name="use_face_or_screen_lock_label">"Usa il volto o il blocco schermo"</string>
+    <string msgid="6961788485681412417" name="use_fingerprint_label">"Usa l\'impronta"</string>
+    <string msgid="7577690399303139443" name="use_fingerprint_or_screen_lock_label">"Usa l\'impronta o il blocco schermo"</string>
+    <string msgid="5459869335976243512" name="use_screen_lock_label">"Usa il blocco schermo"</string>
+    <string name="vault">Cassaforte</string>
+    <string name="vault_description">Attiva cifratura delle note nel vault</string>
+    <string name="version">Versione</string>
+    <string name="view_style_description">Seleziona lo stile di visualizzazione</string>
+    <string name="widgets">Widget</string>
+    <string name="words">Parole</string>
+    <string name="yes">Sì</string>
+</resources>
