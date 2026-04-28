@@ -1,4 +1,0 @@
-#Tue Apr 28 11:40:26 AEST 2026
-base.0=/home/computer/Documents/notesv4_strongbox_tee/tee_strngbox_v4_final_stable/Notes-main/app/build/intermediates/dex/fdroidRelease/minifyFdroidReleaseWithR8/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
