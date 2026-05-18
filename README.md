@@ -1,7 +1,6 @@
 # Notes
 
-> A private notes app. Not "private by default." Just private.
-
+> A private notes app. 
 ![GitHub all releases](https://img.shields.io/github/downloads/jegly/Notes/total)
 
 ---
@@ -50,13 +49,8 @@ Your notes are encrypted with AES-256-GCM. The key lives in your device's secure
 
 ---
 
-## APK verification
 
-```
-sha256: 4977d9cb18e0e2060b67cfebdaba6e76e51bb7bacc3f79a70a114e39ab142a11
-```
 
----
 
 ## Upstream
 
