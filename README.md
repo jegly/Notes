@@ -1,4 +1,6 @@
-# Notes
+<p align="center">
+  <img src="notes_banner.png" alt="Notes Banner" width="800" />
+</p>
 
 > A private notes app. 
 ![GitHub all releases](https://img.shields.io/github/downloads/jegly/Notes/total)
