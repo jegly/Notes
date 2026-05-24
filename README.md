@@ -3,7 +3,6 @@
 </p>
 
 > A private notes app. 
-![GitHub all releases](https://img.shields.io/github/downloads/jegly/Notes/total)
 
 ---
 
@@ -57,3 +56,6 @@ Your notes are encrypted with AES-256-GCM. The key lives in your device's secure
 ## Upstream
 
 Fork of [EasyNotes by Kin69](https://github.com/Kin69/EasyNotes). Changes are intentionally not upstreamed — the threat model diverges too far from the original project's goals.
+
+![GitHub all releases](https://img.shields.io/github/downloads/jegly/Notes/total)
+
