@@ -2,17 +2,16 @@
   <img src="notes_banner.png" alt="Notes Banner" width="800" />
 </p>
 
-> A private notes app. 
+> A private notes app for Android.
 
 ---
 
-EasyNotes is a good app. It also syncs to the cloud, prompts for donations, ships a vault toggle, and hashes passwords with a single SHA-256 pass. This fork strips all of that out and rebuilds the security layer from scratch.
 
 Your notes are encrypted with AES-256-GCM. The key lives in your device's secure hardware — TEE or StrongBox, depending on your chip. It never touches the JVM heap. When you uninstall the app, the key is gone. There is no recovery path, because there is no key to recover.
 
 ---
 
-## What changed
+## What changed in this fork
 
 **Removed**
 - Cloud and NextCloud sync
@@ -33,6 +32,7 @@ Your notes are encrypted with AES-256-GCM. The key lives in your device's secure
 - Auto-lock timeout — configurable: 1, 5, 15, 30 minutes, or never
 - In-memory zeroization on lock — decrypted note content is cleared from RAM when the app locks
 - Export / Import plain text — replaces the defunct backup system
+  
 
 ---
 
