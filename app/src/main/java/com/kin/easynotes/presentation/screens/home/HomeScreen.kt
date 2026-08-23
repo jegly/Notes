@@ -36,7 +36,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.kin.easynotes.R
 import com.kin.easynotes.domain.model.Note
 import com.kin.easynotes.presentation.components.DecryptionResult
@@ -211,10 +211,16 @@ private fun NotesSearchBar(
             .fillMaxWidth()
             .padding(horizontalPadding, 16.dp, horizontalPadding, 18.dp)
             .scale(searchBarScale),
-        query = query,
-        placeholder = { Text(stringResource(R.string.search)) },
-        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = "Search") },
-        trailingIcon = {
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = query,
+                onQueryChange = onQueryChange,
+                onSearch = onQueryChange,
+                expanded = false,
+                onExpandedChange = {},
+                placeholder = { Text(stringResource(R.string.search)) },
+                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = "Search") },
+                trailingIcon = {
             Row(
                 modifier = Modifier.padding(end = 6.dp)
             ) {
@@ -285,11 +291,11 @@ private fun NotesSearchBar(
                     }
                 }
             }
+                },
+            )
         },
-        onQueryChange = onQueryChange,
-        onSearch = onQueryChange,
-        onActiveChange = {},
-        active = false,
+        expanded = false,
+        onExpandedChange = {},
         colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {}
 }

@@ -23,7 +23,6 @@
     <string name="version">Versione</string>
     <string name="latest_release">Ultimo rilascio</string>
     <string name="start_project">Supporta il progetto</string>
-    <string name="donate_me">Donami :)</string>
     <string name="restore">Ripristina</string>
     <string name="notes">Note</string>
     <string name="system_theme">Tema del sistema</string>
@@ -34,7 +33,6 @@
     <string name="information">Informazione</string>
     <string name="markdown">Markdown</string>
     <string name="language">Lingua</string>
-    <string name="support">Supporto</string>
     <string name="color_styles"><![CDATA[Colori e stili]]></string>
     <string name="tools">Strumenti</string>
     <string name="history">Cronologia</string>

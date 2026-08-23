@@ -23,7 +23,6 @@
     <string name="version">Verzia</string>
     <string name="latest_release">Najnovšie vydanie</string>
     <string name="start_project">Hviezda projektu</string>
-    <string name="donate_me">Podpor Ma :)</string>
     <string name="restore">Obnoviť</string>
     <string name="notes">Poznámky</string>
     <string name="markdown">Markdown</string>
@@ -44,7 +43,6 @@
     <string name="delete">Odstrániť</string>
     <string name="information">Informácie</string>
     <string name="system_theme">Systémová téma</string>
-    <string name="support">Podpora</string>
     <string name="color_styles"><![CDATA[Colors & Styles]]></string>
     <string name="language">Jazyk</string>
     <string name="description_cloud">NextCloud • Lokálne • Šifrovanie</string>

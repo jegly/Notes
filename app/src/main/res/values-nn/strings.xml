@@ -31,10 +31,8 @@
     <string name="about">Om</string>
     <string name="version">Versjon</string>
     <string name="latest_release">Siste utgåve</string>
-    <string name="donate_me">Gje ei pengegåve :)</string>
     <string name="restore">Gjenopprett</string>
     <string name="notes">Notat</string>
-    <string name="support">Støtte</string>
     <string name="color_styles"><![CDATA[Fargar og stilar]]></string>
     <string name="language">Språk</string>
     <string name="markdown">Markdown</string>

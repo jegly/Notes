@@ -29,10 +29,8 @@
     <string name="version">الإصدار</string>
     <string name="latest_release">أحدث إصدار</string>
     <string name="start_project">قم بتمييز المشروع بنجمة</string>
-    <string name="donate_me">تبرع لي :)</string>
     <string name="restore">إسترجاع</string>
     <string name="notes">الملاحظات</string>
-    <string name="support">دعم</string>
     <string name="color_styles">الألوان و الأساليب</string>
     <string name="language">اللغة</string>
     <string name="markdown">Markdown</string>

@@ -15,7 +15,6 @@
     <string name="database">База даних</string>
     <string name="not_supported">Ще не підтримується</string>
     <string name="start_project">Оцінити застосунок</string>
-    <string name="donate_me">Підтримайте мене :)</string>
     <string name="restore">Відновити</string>
     <string name="notes">Нотатки</string>
     <string name="color_styles"><![CDATA[Colors & Styles]]></string>
@@ -59,7 +58,6 @@
     <string name="backup">Резервне копіювання</string>
     <string name="about">Про застосунок</string>
     <string name="version">Версія</string>
-    <string name="support">Пожертвуйте</string>
     <string name="language">Мова</string>
     <string name="description_color_styles">Тема • Розмір • Шрифт</string>
     <string name="description_cloud">NextCloud • Локально • Шифрування</string>

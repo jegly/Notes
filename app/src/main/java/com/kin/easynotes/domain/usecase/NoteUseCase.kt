@@ -1,16 +1,12 @@
 package com.kin.easynotes.domain.usecase
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.glance.appwidget.updateAll
 import com.kin.easynotes.data.repository.NoteRepositoryImpl
 import com.kin.easynotes.domain.model.Note
 import com.kin.easynotes.presentation.components.DecryptionResult
 import com.kin.easynotes.presentation.components.EncryptionHelper
-import com.kin.easynotes.widget.NotesWidget
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,8 +21,7 @@ import javax.inject.Inject
 class NoteUseCase @Inject constructor(
     private val noteRepository: NoteRepositoryImpl,
     private val coroutineScope: CoroutineScope,
-    private val encryptionHelper: EncryptionHelper,
-    @param:ApplicationContext private val context: Context
+    private val encryptionHelper: EncryptionHelper
 ) {
     var notes: List<Note> by mutableStateOf(emptyList())
         private set
@@ -64,17 +59,14 @@ class NoteUseCase @Inject constructor(
 
                 decryptionResult = if (rawNotes.isEmpty()) DecryptionResult.EMPTY else worstResult
                 notes = processed
-                NotesWidget().updateAll(context)
             }
         }
     }
 
-    private fun encryptNote(note: Note): Note {
-        return note.copy(
-            name = encryptionHelper.encrypt(note.name),
-            description = encryptionHelper.encrypt(note.description),
-            encrypted = true
-        )
+    private fun encryptNote(note: Note): Result<Note> {
+        val name = encryptionHelper.encrypt(note.name).getOrElse { return Result.failure(it) }
+        val description = encryptionHelper.encrypt(note.description).getOrElse { return Result.failure(it) }
+        return Result.success(note.copy(name = name, description = description, encrypted = true))
     }
 
     private fun decryptNote(note: Note): Pair<Note, DecryptionResult> {
@@ -92,13 +84,24 @@ class NoteUseCase @Inject constructor(
         )
     }
 
-    suspend fun addNote(note: Note) {
-        // Always encrypt every note
-        val noteToSave = encryptNote(note)
-        if (note.id == 0) {
-            noteRepository.addNote(noteToSave)
-        } else {
-            noteRepository.updateNote(noteToSave)
+    /**
+     * Encrypt and persist [note]. Returns the note's id on success.
+     *
+     * Returns a failure — rather than throwing — when the Keystore key is unavailable
+     * (device locked, key missing). Callers are expected to keep the plaintext and
+     * retry, since the note has NOT been written in that case.
+     */
+    suspend fun addNote(note: Note): Result<Int> {
+        val noteToSave = encryptNote(note).getOrElse { return Result.failure(it) }
+        return runCatching {
+            if (note.id == 0) {
+                val rowId = noteRepository.addNote(noteToSave)
+                if (rowId <= 0L) error("Insert was ignored by the database")
+                rowId.toInt()
+            } else {
+                noteRepository.updateNote(noteToSave)
+                note.id
+            }
         }
     }
 
@@ -117,12 +120,15 @@ class NoteUseCase @Inject constructor(
 
     fun getNoteById(id: Int): Flow<Note?> = noteRepository.getNoteById(id)
 
-    fun getLastNoteId(onResult: (Long?) -> Unit) {
-        coroutineScope.launch(NonCancellable + Dispatchers.IO) {
-            val lastNoteId = noteRepository.getLastNoteId()
-            withContext(Dispatchers.Main) { onResult(lastNoteId) }
-        }
-    }
+    /**
+     * Number of rows actually in the database, regardless of whether they decrypt.
+     *
+     * [notes] only contains successfully decrypted notes, so callers that export user data
+     * must compare against this before writing a file — otherwise an undecryptable note is
+     * silently omitted from a backup the user believes is complete. Returns -1 if unknown.
+     */
+    suspend fun rawNoteCount(): Int =
+        runCatching { noteRepository.getAllNotes().first().size }.getOrDefault(-1)
 
     /**
      * Zeroize in-memory decrypted note content when the app locks.
@@ -142,8 +148,9 @@ class NoteUseCase @Inject constructor(
      * Call this after changing the password (old password used to decrypt, new already loaded).
      * Also call on first setup to encrypt any pre-existing plain notes.
      */
-    suspend fun reEncryptAllNotes(oldPassword: String?) {
-        val rawNotes = noteRepository.getAllNotes().first()
+    suspend fun reEncryptAllNotes(oldPassword: String?): Result<Unit> {
+        val rawNotes = runCatching { noteRepository.getAllNotes().first() }
+            .getOrElse { return Result.failure(it) }
         rawNotes.forEach { note ->
             val plainName: String
             val plainDesc: String
@@ -159,14 +166,15 @@ class NoteUseCase @Inject constructor(
                 plainName = note.name
                 plainDesc = note.description
             }
-            // Re-encrypt with current password (already loaded in encryptionHelper)
-            val reEncrypted = note.copy(
-                name = encryptionHelper.encrypt(plainName),
-                description = encryptionHelper.encrypt(plainDesc),
-                encrypted = true
-            )
-            noteRepository.updateNote(reEncrypted)
+            // Re-encrypt with the current Keystore key. Abort the whole pass on the first
+            // failure rather than leaving the table half-converted.
+            val name = encryptionHelper.encrypt(plainName).getOrElse { return Result.failure(it) }
+            val desc = encryptionHelper.encrypt(plainDesc).getOrElse { return Result.failure(it) }
+            runCatching {
+                noteRepository.updateNote(note.copy(name = name, description = desc, encrypted = true))
+            }.getOrElse { return Result.failure(it) }
         }
+        return Result.success(Unit)
     }
 
     /**

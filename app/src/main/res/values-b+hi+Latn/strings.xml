@@ -24,13 +24,11 @@
     <string name="about">App ke barein mein</string>
     <string name="version">Sanskaran</string>
     <string name="latest_release">Naya Release</string>
-    <string name="donate_me">Mujhe Daan Karo :)</string>
     <string name="notes">Notes</string>
     <string name="created_time">Nirmaan ka samay</string>
     <string name="column_view">Stambh roop</string>
     <string name="description">Varnan</string>
     <string name="restore">Restore</string>
-    <string name="support">Sahayata</string>
     <string name="language">Bhasha</string>
     <string name="tools">Auzaar</string>
     <string name="history">Itihas</string>

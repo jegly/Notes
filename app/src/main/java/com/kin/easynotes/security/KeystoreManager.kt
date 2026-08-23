@@ -54,17 +54,24 @@ class KeystoreManager(private val context: Context) {
     }
 
     /**
-     * Returns true if our master key already exists in the Keystore.
+     * Returns true if our master key already exists in the Keystore AND is actually
+     * retrievable.
+     *
+     * A bare containsAlias() check is not enough: a key generation that fails partway
+     * (which StrongBox can do) leaves an alias behind that can never be resolved to a
+     * SecretKey. Treating that as "key exists" meant the key was never regenerated and
+     * every subsequent save failed permanently.
      */
-    fun keyExists(): Boolean {
-        return try {
-            val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER)
-            keyStore.load(null)
-            keyStore.containsAlias(KEY_ALIAS)
-        } catch (e: Exception) {
-            false
-        }
-    }
+    fun keyExists(): Boolean = getKey() != null
+
+    /**
+     * Verifies the key can actually perform an encryption right now.
+     *
+     * Distinct from [keyExists]: the key can be present and well-formed but still refuse
+     * to operate because [setUnlockedDeviceRequired] is set and the device is locked.
+     * Callers use this to tell "needs regenerating" apart from "wait until unlocked".
+     */
+    fun isKeyUsable(): Boolean = encrypt("probe").isSuccess
 
     /**
      * Generate a new AES-256-GCM key inside the Keystore.
@@ -75,50 +82,70 @@ class KeystoreManager(private val context: Context) {
         if (!isDeviceSecure()) {
             return Result.failure(KeystoreError.NoScreenLock)
         }
-        return try {
-            val keyGenerator = KeyGenerator.getInstance(
-                KeyProperties.KEY_ALGORITHM_AES,
-                KEYSTORE_PROVIDER
-            )
-            val spec = KeyGenParameterSpec.Builder(
-                KEY_ALIAS,
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            )
-                .setKeySize(KEY_SIZE_BITS)
-                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                // On some devices (e.g. ZTE), setUnlockedDeviceRequired(true) can cause 
-                // key generation failure during initial setup even if lock is set.
-                // We'll try with it enabled first, then fall back to disabled if it fails.
-                .setUnlockedDeviceRequired(true) 
-                .setRandomizedEncryptionRequired(true)
-                .apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        try { setIsStrongBoxBacked(true) } catch (e: Exception) { /* TEE fallback */ }
-                    }
-                }
-                .build()
+        // Refuse to run if a usable key is already present. The retry ladder below deletes
+        // the alias between attempts, which would irrecoverably destroy every existing
+        // note if this were ever called with a live key in place.
+        if (getKey() != null) {
+            return Result.success(Unit)
+        }
 
-            keyGenerator.init(spec)
-            keyGenerator.generateKey()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            // Fallback: try without setUnlockedDeviceRequired if first attempt failed
+        // Ordered from strongest to weakest. Earlier attempts can fail on hardware that
+        // does not support the requested backing; each is tried in turn.
+        //
+        // NOTE: unlockedDeviceRequired is kept for BOTH hardware-backed attempts. The
+        // previous fallback silently dropped it, so two devices running identical code
+        // ended up with different security postures purely by accident of hardware — and
+        // only the strict one exposed the save-during-lock bug.
+        val attempts = listOf(
+            KeySpecAttempt(strongBox = true,  unlockedDeviceRequired = true),
+            KeySpecAttempt(strongBox = false, unlockedDeviceRequired = true),
+            KeySpecAttempt(strongBox = false, unlockedDeviceRequired = false),
+        )
+
+        val failures = mutableListOf<String>()
+        for (attempt in attempts) {
+            // Clear any alias left behind by a previous partial failure, otherwise the
+            // next generate can collide with an unusable half-created entry.
+            deleteKey()
             try {
-                val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE_PROVIDER)
-                val fallbackSpec = KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                    .setKeySize(KEY_SIZE_BITS)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .setRandomizedEncryptionRequired(true)
-                    .build()
-                keyGenerator.init(fallbackSpec)
+                val keyGenerator = KeyGenerator.getInstance(
+                    KeyProperties.KEY_ALGORITHM_AES,
+                    KEYSTORE_PROVIDER
+                )
+                keyGenerator.init(buildSpec(attempt))
                 keyGenerator.generateKey()
-                Result.success(Unit)
-            } catch (e2: Exception) {
-                Result.failure(KeystoreError.Other("Primary & Fallback failed: ${e.message} | ${e2.message}"))
+                // Only accept the key if it can actually be resolved and used.
+                if (getKey() != null) return Result.success(Unit)
+                failures += "${attempt}: key generated but not retrievable"
+            } catch (e: Exception) {
+                failures += "$attempt: ${e.message}"
             }
         }
+        deleteKey()
+        return Result.failure(KeystoreError.Other("Key generation failed. ${failures.joinToString(" | ")}"))
+    }
+
+    private data class KeySpecAttempt(val strongBox: Boolean, val unlockedDeviceRequired: Boolean) {
+        override fun toString() =
+            "[strongBox=$strongBox, unlockedDeviceRequired=$unlockedDeviceRequired]"
+    }
+
+    private fun buildSpec(attempt: KeySpecAttempt): KeyGenParameterSpec {
+        return KeyGenParameterSpec.Builder(
+            KEY_ALIAS,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        )
+            .setKeySize(KEY_SIZE_BITS)
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setRandomizedEncryptionRequired(true)
+            .setUnlockedDeviceRequired(attempt.unlockedDeviceRequired)
+            .apply {
+                if (attempt.strongBox && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    setIsStrongBoxBacked(true)
+                }
+            }
+            .build()
     }
 
     /**

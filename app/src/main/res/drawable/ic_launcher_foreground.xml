@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Adaptive icon foreground: three overlapping smiley faces (sad, flat, happy).
+
+    This is the approved concept VERBATIM. Every path below carries the original's
+    coordinates in its native 110x110 tile — r=20 body discs at (30,55), (55,55),
+    (80,55), r=20 drop-shadow discs offset +2/+3, r=17.5 lit discs offset -1.5/-2,
+    2.4x3.6 eyes, 3.5 mouth strokes. Nothing has been re-derived, re-proportioned or
+    embellished. If you need to change the artwork, change it in the concept and
+    re-transplant; do not hand-edit numbers here.
+
+    The single wrapping <group> maps that 110 tile onto the icon's visible area:
+    scale 0.6545 about pivot (55,55), then translate -1,-1 to move the tile centre
+    onto the canvas centre (54,54). 110 x 0.6545 = 72dp, the masked viewport, which
+    is why the icon reads at the same relative size it does in the concept. The
+    artwork's own extremes (x=10 and x=103 in tile space) land 29.5 and 31.4 from
+    centre, inside the 66dp safe circle of radius 33.
+
+    Gaps between faces were drawn in the concept as background-coloured discs. Here
+    they are true transparent cut-outs so the background layer shows through and
+    parallax cannot expose them — same appearance, correct layering. Each is a
+    clip-path: the tile rect wound clockwise with a counter-wound r=23 circle at the
+    next face's centre, which non-zero winding renders as a hole.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group
+        android:pivotX="55"
+        android:pivotY="55"
+        android:scaleX="0.6545"
+        android:scaleY="0.6545"
+        android:translateX="-1"
+        android:translateY="-1">
+
+        <!-- face 1 - sad, cut where the flat face overlaps -->
+        <group>
+            <clip-path
+                android:pathData="M0,0 L110,0 L110,110 L0,110 Z
+                                  M32,55 a23,23 0 1,0 46,0 a23,23 0 1,0 -46,0 Z" />
+            <path
+                android:fillColor="#A87F00"
+                android:pathData="M12,58 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+            <path
+                android:fillColor="#E0B400"
+                android:pathData="M10,55 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+            <path
+                android:fillColor="#FFD400"
+                android:pathData="M11,53 a17.5,17.5 0 1,0 35,0 a17.5,17.5 0 1,0 -35,0 Z" />
+            <path
+                android:fillColor="#241E05"
+                android:pathData="M20.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z" />
+            <path
+                android:fillColor="#241E05"
+                android:pathData="M32.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z" />
+            <path
+                android:strokeColor="#241E05"
+                android:strokeWidth="3.5"
+                android:strokeLineCap="round"
+                android:pathData="M20,65 Q29,55 38,65" />
+        </group>
+
+        <!-- face 2 - flat, cut where the happy face overlaps -->
+        <group>
+            <clip-path
+                android:pathData="M0,0 L110,0 L110,110 L0,110 Z
+                                  M57,55 a23,23 0 1,0 46,0 a23,23 0 1,0 -46,0 Z" />
+            <path
+                android:fillColor="#A87F00"
+                android:pathData="M37,58 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+            <path
+                android:fillColor="#E0B400"
+                android:pathData="M35,55 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+            <path
+                android:fillColor="#FFD400"
+                android:pathData="M36,53 a17.5,17.5 0 1,0 35,0 a17.5,17.5 0 1,0 -35,0 Z" />
+            <path
+                android:fillColor="#241E05"
+                android:pathData="M45.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z" />
+            <path
+                android:fillColor="#241E05"
+                android:pathData="M57.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z" />
+            <path
+                android:strokeColor="#241E05"
+                android:strokeWidth="3.5"
+                android:strokeLineCap="round"
+                android:pathData="M45,60 L63,60" />
+        </group>
+
+        <!-- face 3 - happy, front, uncut -->
+        <path
+            android:fillColor="#A87F00"
+            android:pathData="M62,58 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+        <path
+            android:fillColor="#E0B400"
+            android:pathData="M60,55 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z" />
+        <path
+            android:fillColor="#FFD400"
+            android:pathData="M61,53 a17.5,17.5 0 1,0 35,0 a17.5,17.5 0 1,0 -35,0 Z" />
+        <path
+            android:fillColor="#241E05"
+            android:pathData="M70.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z" />
+        <path
+            android:fillColor="#241E05"
+            android:pathData="M82.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z" />
+        <path
+            android:strokeColor="#241E05"
+            android:strokeWidth="3.5"
+            android:strokeLineCap="round"
+            android:pathData="M70,57 Q79,68 88,57" />
+    </group>
+</vector>

@@ -34,9 +34,25 @@ class EncryptionHelper(
         mutableSessionToken.append(newPassword)
     }
 
-    fun encrypt(data: String): String {
-        if (mutableSessionToken.isEmpty()) throw IllegalStateException("Session not active")
-        return keystoreManager.encrypt(data).getOrThrow()
+    /**
+     * Encrypt [data] with the Keystore-backed master key.
+     *
+     * Never throws. The master key is generated with `setUnlockedDeviceRequired(true)`,
+     * so the secure element refuses to use it while the device is locked — an encrypt
+     * attempted on a lock transition (screen off, fold closed, power button) legitimately
+     * fails. Callers must treat failure as "could not save right now" and retain the
+     * plaintext, rather than letting it escape as an uncaught exception.
+     */
+    fun encrypt(data: String): Result<String> {
+        if (mutableSessionToken.isEmpty()) {
+            return Result.failure(SessionNotActive)
+        }
+        return keystoreManager.encrypt(data)
+    }
+
+    /** Thrown-free marker for "the app is locked, there is no session to encrypt under". */
+    object SessionNotActive : IllegalStateException("Session not active") {
+        private fun readResolve(): Any = SessionNotActive
     }
 
     fun decrypt(data: String): Pair<String?, DecryptionResult> {

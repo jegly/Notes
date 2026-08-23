@@ -5,18 +5,24 @@ import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.DisposableEffect
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.kin.easynotes.presentation.components.unregisterGalleryObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
+import com.kin.easynotes.BuildConfig
+import com.kin.easynotes.R
 import com.kin.easynotes.presentation.navigation.AppNavHost
 import com.kin.easynotes.presentation.navigation.NavRoutes
 import com.kin.easynotes.presentation.screens.settings.model.SettingsViewModel
 import com.kin.easynotes.presentation.theme.NotesTheme
+import com.kin.easynotes.security.SignatureVerifier
 import dagger.hilt.android.AndroidEntryPoint
 
 fun NavOptionsBuilder.popUpToTop(navController: NavController) {
@@ -32,41 +38,56 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!BuildConfig.DEBUG && !SignatureVerifier(this).isSignedByTrustedCert()) {
+            showTamperDialog()
+            return
+        }
+
         enableEdgeToEdge()
 
         setContent {
             settingsViewModel = hiltViewModel<SettingsViewModel>()
+            val vm = settingsViewModel!!
 
-            if (settingsViewModel!!.settings.value.screenProtection) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            // Was applied directly in the composable body: it re-ran on every recomposition
+            // and, worse, was never cleared — turning screen protection off left FLAG_SECURE
+            // set until the process died.
+            val screenProtection = vm.settings.value.screenProtection
+            DisposableEffect(screenProtection) {
+                if (screenProtection) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                }
+                onDispose { }
             }
 
-            val rawNoteId = intent?.getIntExtra("noteId", -1) ?: -1
-
-            if (settingsViewModel!!.settings.value.gallerySync) {
-                contentResolver.registerContentObserver(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    true,
-                    settingsViewModel!!.galleryObserver
-                )
+            // Was registered in the composable body — a fresh registration on every
+            // recomposition, and never unregistered. unregisterGalleryObserver() existed
+            // but had no callers.
+            val gallerySync = vm.settings.value.gallerySync
+            DisposableEffect(gallerySync) {
+                if (gallerySync) {
+                    contentResolver.registerContentObserver(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        true,
+                        vm.galleryObserver
+                    )
+                }
+                onDispose {
+                    if (gallerySync) unregisterGalleryObserver(this@MainActivity, vm.galleryObserver)
+                }
             }
 
             NotesTheme(settingsViewModel!!) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     navController = rememberNavController()
 
-                    val isLocked = settingsViewModel!!.settings.value.isSetup &&
-                                   settingsViewModel!!.sessionPassword == null
-                    val safeNoteId = if (isLocked && rawNoteId != -1) {
-                        settingsViewModel!!.pendingWidgetNoteId = rawNoteId
-                        -1
-                    } else rawNoteId
-
                     AppNavHost(
                         settingsViewModel!!,
                         navController,
-                        safeNoteId,
-                        settingsViewModel!!.defaultRoute!!
+                        vm.defaultRoute!!
                     )
                 }
             }
@@ -97,5 +118,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         // onPause already started the timer — nothing extra needed
+    }
+
+    private fun showTamperDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.tamper_dialog_title)
+            .setMessage(R.string.tamper_dialog_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.tamper_dialog_exit) { _, _ -> finishAndRemoveTask() }
+            .show()
     }
 }

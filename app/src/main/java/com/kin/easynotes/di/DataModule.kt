@@ -25,19 +25,9 @@ import java.util.concurrent.Executors
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-@Qualifier
-annotation class WidgetCoroutineScope
-
 @Module
 @InstallIn(SingletonComponent::class)
 object ApplicationModule {
-
-    @Provides
-    @Singleton
-    @WidgetCoroutineScope
-    fun providesWidgetCoroutineScope(): CoroutineScope = CoroutineScope(
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    )
 
     @Provides
     @Singleton

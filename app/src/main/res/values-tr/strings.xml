@@ -29,10 +29,8 @@
     <string name="version">Sürüm</string>
     <string name="latest_release">Son Yayın</string>
     <string name="start_project">Projeye Başla</string>
-    <string name="donate_me">Bağış Yap :)</string>
     <string name="restore">Geri Yükle</string>
     <string name="notes">Notlar</string>
-    <string name="support">Destek</string>
     <string name="color_styles"><![CDATA[ Renkler & Stiller ]]></string>
     <string name="language">Dil</string>
     <string name="markdown">Markdown</string>

@@ -6,21 +6,32 @@ import com.kin.easynotes.core.constant.ConnectionConst
 import com.kin.easynotes.data.repository.SettingsRepositoryImpl
 import com.kin.easynotes.domain.model.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import javax.inject.Inject
 
+private fun Field.isInstancePersistable(): Boolean =
+    !isSynthetic && !Modifier.isStatic(modifiers)
+
 class SettingsUseCase @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepositoryImpl,
 ) {
 
     suspend fun loadSettingsFromRepository(): Settings {
         return Settings().apply {
             Settings::class.java.declaredFields.forEach { field ->
-                field.isAccessible = true
-                val settingName = field.name
-                val defaultValue = field.get(this)
-                val settingValue = getSettingValue(field.type, settingName, defaultValue)
-                field.set(this, settingValue)
+                if (!field.isInstancePersistable()) return@forEach
+                // One unreadable or unwritable field must not take down settings loading:
+                // this runs inside a runBlocking in SettingsViewModel.init, so anything that
+                // escapes here crashes the app before the first frame.
+                runCatching {
+                    field.isAccessible = true
+                    val settingName = field.name
+                    val defaultValue = field.get(this)
+                    val settingValue = getSettingValue(field.type, settingName, defaultValue)
+                    field.set(this, settingValue)
+                }
             }
         }
     }
@@ -47,10 +58,13 @@ class SettingsUseCase @Inject constructor(
 
     suspend fun saveSettingsToRepository(settings: Settings) {
         Settings::class.java.declaredFields.forEach { field ->
+            if (!field.isInstancePersistable()) return@forEach
             field.isAccessible = true
             val settingName = field.name
-            val settingValue = field.get(settings)
-            saveSettingValue(settingName, settingValue)
+            val settingValue = runCatching { field.get(settings) }.getOrNull()
+            // Skip rather than abort the whole save — dropping the remaining fields would
+            // lose unrelated settings, including the password hash.
+            runCatching { saveSettingValue(settingName, settingValue) }
         }
     }
 
@@ -60,7 +74,7 @@ class SettingsUseCase @Inject constructor(
             is String -> settingsRepository.putString(settingName, settingValue)
             is Int -> settingsRepository.putInt(settingName, settingValue)
             null -> settingsRepository.getPreferences().toMutablePreferences().remove(stringPreferencesKey(settingName))
-            else -> throw IllegalArgumentException("Unsupported setting type: ${settingValue?.javaClass}")
+            else -> throw IllegalArgumentException("Unsupported setting type: ${settingValue.javaClass}")
         }
     }
 }

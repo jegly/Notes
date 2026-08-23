@@ -18,10 +18,8 @@
     <string name="amoled_colors">아몰레드 색상</string>
     <string name="database">데이터베이스</string>
     <string name="backup">백업</string>
-    <string name="donate_me">후원을 부탁드립니다 :)</string>
     <string name="restore">복원</string>
     <string name="notes">노트</string>
-    <string name="support">지원</string>
     <string name="markdown">마크다운</string>
     <string name="tools">도구</string>
     <string name="history">역사</string>

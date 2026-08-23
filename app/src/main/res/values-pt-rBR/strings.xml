@@ -17,7 +17,6 @@
     <string name="latest_release">Última Versão</string>
     <string name="restore">Restaurar</string>
     <string name="notes">Notas</string>
-    <string name="support">Suporte</string>
     <string name="language">Linguagem</string>
     <string name="markdown">Formatação</string>
     <string name="tools">Ferramentas</string>
@@ -32,7 +31,6 @@
     <string name="grid_view">Modo Grade</string>
     <string name="amoled_colors">Modo Amoled</string>
     <string name="start_project">Criar Projeto</string>
-    <string name="donate_me">Fazer doação :)</string>
     <string name="color_styles"><![CDATA[Cores & Modos]]></string>
     <string name="system_theme">Seguir Tema do Sistema</string>
     <string name="description_widgets">Widgets • Formatação</string>

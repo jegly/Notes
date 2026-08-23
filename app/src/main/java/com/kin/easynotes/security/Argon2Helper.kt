@@ -51,6 +51,23 @@ object Argon2Helper {
     }
 
     /**
+     * Derive a 32-byte key from a passphrase and caller-supplied salt.
+     * Used for the encrypted backup file format — the salt is stored in the
+     * backup header so the same key can be re-derived on any device.
+     */
+    fun deriveKey(passphrase: String, salt: ByteArray): ByteArray {
+        return argon2.hash(
+            mode       = Argon2Mode.ARGON2_ID,
+            password   = passphrase.toByteArray(Charsets.UTF_8),
+            salt       = salt,
+            tCostInIterations = ITERATIONS,
+            mCostInKibibyte   = MEMORY_KB,
+            parallelism       = PARALLELISM,
+            hashLengthInBytes = OUTPUT_BYTES
+        ).rawHashAsByteArray()
+    }
+
+    /**
      * Constant-time verification of a password against a stored hash.
      */
     fun verify(password: String, storedHash: String?): Boolean {

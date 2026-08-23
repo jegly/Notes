@@ -8,7 +8,6 @@
     <string name="notes">Noter</string>
     <string name="color_styles"><![CDATA[Farver og stile]]></string>
     <string name="widgets">Widgets</string>
-    <string name="support">Støt</string>
     <string name="cloud">Cloud</string>
     <string name="description_history">Historik • Gør om</string>
     <string name="description_markdown">Understøttelse • Billeder</string>
@@ -59,7 +58,6 @@
     <string name="amoled_colors">Amoled-farver</string>
     <string name="version">Version</string>
     <string name="latest_release">Seneste Udgivelse</string>
-    <string name="donate_me">Donér til mig :)</string>
     <string name="markdown">Markdown</string>
     <string name="language">Sprog</string>
     <string name="tools">Værktøjer</string>

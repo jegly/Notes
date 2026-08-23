@@ -16,7 +16,6 @@
     <string name="version">سوروم</string>
     <string name="restore">گری یوكلە</string>
     <string name="notes">نوطلر</string>
-    <string name="support">دستك</string>
     <string name="language">دیل</string>
     <string name="markdown">ماركدؤن</string>
     <string name="tools">آراچلر</string>
@@ -95,7 +94,6 @@
     <string name="no_created_notes">اولوشدرولان نوط یوق.</string>
     <string name="no_found_notes">نوط بولونامەدی.</string>
     <string name="not_supported">هنوز دستكلەنمییور</string>
-    <string name="donate_me">باغیش یاپ :)</string>
     <string name="color_styles"><![CDATA[ رنگلر & ستیللر ]]></string>
     <string name="description_language">یازی تیپی • دیل</string>
     <string name="description_widgets">ویجەت‌لر • ماركدؤن</string>

@@ -22,7 +22,6 @@
     <string name="version">バージョン</string>
     <string name="latest_release">最新のリリース</string>
     <string name="start_project">プロジェクトにスターを付ける</string>
-    <string name="donate_me">寄付してください :)</string>
     <string name="restore">復元</string>
     <string name="notes">ノート</string>
     <string name="tools">ツール</string>
@@ -32,7 +31,6 @@
     <string name="delete">削除</string>
     <string name="system_theme">システムテーマ</string>
     <string name="information">情報</string>
-    <string name="support">サポート</string>
     <string name="color_styles">カラーとスタイル</string>
     <string name="language">言語</string>
     <string name="markdown">マークダウン</string>

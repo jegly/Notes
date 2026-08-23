@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="donate_me">Donativos</string>
     <string name="widgets">Widgets</string>
     <string name="new_note">Nova Nota</string>
     <string name="notes">Notas</string>
     <string name="description">Descrição</string>
     <string name="source_code">Código Fonte</string>
     <string name="show_only_title_description">Mostrar apenas título na ante-visão</string>
-    <string name="support">Suporte</string>
     <string name="app_name">Notes</string>
     <string name="select_all">Selecionar todas</string>
     <string name="dynamic_colors">Cores Dinâmicas</string>

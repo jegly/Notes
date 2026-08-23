@@ -93,6 +93,18 @@ fun generatePalette(
         surfaceVariant = scheme.surfaceVariant.toColor(),
         tertiary = scheme.tertiary.toColor(),
         tertiaryContainer = scheme.tertiaryContainer.toColor(),
+        primaryFixed = scheme.primaryFixed.toColor(),
+        primaryFixedDim = scheme.primaryFixedDim.toColor(),
+        onPrimaryFixed = scheme.onPrimaryFixed.toColor(),
+        onPrimaryFixedVariant = scheme.onPrimaryFixedVariant.toColor(),
+        secondaryFixed = scheme.secondaryFixed.toColor(),
+        secondaryFixedDim = scheme.secondaryFixedDim.toColor(),
+        onSecondaryFixed = scheme.onSecondaryFixed.toColor(),
+        onSecondaryFixedVariant = scheme.onSecondaryFixedVariant.toColor(),
+        tertiaryFixed = scheme.tertiaryFixed.toColor(),
+        tertiaryFixedDim = scheme.tertiaryFixedDim.toColor(),
+        onTertiaryFixed = scheme.onTertiaryFixed.toColor(),
+        onTertiaryFixedVariant = scheme.onTertiaryFixedVariant.toColor(),
     )
 }
 

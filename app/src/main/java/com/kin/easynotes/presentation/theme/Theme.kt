@@ -26,6 +26,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -88,15 +89,31 @@ fun NotesTheme(
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 
+    val themeMode = settingsModel.settings.value.themeMode
+    val isDarkUi = when (themeMode) {
+        "catppuccin", "dracula", "ptyxis", "ptyxis_ext" -> true
+        else -> settingsModel.settings.value.darkTheme
+    }
+
     WindowCompat.getInsetsController(activity.window, activity.window.decorView).apply {
-        isAppearanceLightStatusBars = !settingsModel.settings.value.darkTheme
+        isAppearanceLightStatusBars = !isDarkUi
     }
 
     val keyColor = Color(settingsModel.settings.value.customColor)
     val useSystemDynamic = settingsModel.settings.value.customColor == -7896468 // Use system colors if user hasn't picked custom color
+    val colorScheme = when (themeMode) {
+        "catppuccin" -> catppuccinColorScheme(settingsModel.settings.value.catppuccinAccent)
+        "dracula"    -> draculaColorScheme(settingsModel.settings.value.draculaAccent)
+        "ptyxis"     -> buildPtyxisColorScheme(ptyxisPaletteFromKey(settingsModel.settings.value.ptyxisPalette))
+        "ptyxis_ext" -> buildPtyxisExtendedColorScheme(ptyxisPaletteExtendedFromKey(settingsModel.settings.value.ptyxisExtendedPalette))
+        else         -> getColorScheme(context, settingsModel.settings.value.darkTheme, settingsModel.settings.value.dynamicTheme, settingsModel.settings.value.amoledTheme, keyColor, useSystemDynamic)
+    }
+    val typography = remember(settingsModel.settings.value.appFont) {
+        buildAppTypography(appFontFromKey(settingsModel.settings.value.appFont).family)
+    }
     MaterialTheme(
-        colorScheme = getColorScheme(context, settingsModel.settings.value.darkTheme, settingsModel.settings.value.dynamicTheme, settingsModel.settings.value.amoledTheme, keyColor, useSystemDynamic),
-        typography = Typography(),
+        colorScheme = colorScheme,
+        typography = typography,
         content = content
     )
 }

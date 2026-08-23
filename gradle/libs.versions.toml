@@ -1,33 +1,36 @@
 [versions]
-agp = "9.2.0"
-argon2kt = "1.6.0"
-biometricKtx = "1.2.0-alpha05"
-datastorePreferences = "1.1.7"
-glance = "1.1.0"
-hilt = "2.57"
-hiltCompiler = "1.2.0"
-hiltAndroidCompiler = "2.57"
-coilCompose = "2.7.0"
-hiltNavigationCompose = "1.2.0"
-kotlin = "2.2.10"
-ksp = "2.3.2"
-m3color = "2024.6"
-room = "2.7.2"
-activityCompose = "1.10.1"
-coreKtx = "1.16.0"
-coreSplashscreen = "1.0.1"
+agp = "9.3.1"
+argon2kt = "1.6.0"                 # latest release
+# No stable line has ever shipped for biometric-ktx; 1.4.0-alpha02 is the newest available.
+biometricKtx = "1.4.0-alpha02"
+datastorePreferences = "1.2.1"     # latest stable (1.3.0 is alpha only)
+lifecycleRuntimeCompose = "2.11.0"
+hilt = "2.60.1"
+hiltCompiler = "1.4.0"
+hiltAndroidCompiler = "2.60.1"
+coilCompose = "3.5.0"
+hiltNavigationCompose = "1.4.0"
+kotlin = "2.4.10"
+# KSP's version no longer tracks the Kotlin version — 2.3.0 was numbered to sort above
+# 2.2.20-2.0.4 for Gradle's benefit. 2.3.11 supports Kotlin 2.2+ and carries explicit
+# Kotlin 2.4.0 fixes.
+ksp = "2.3.11"
+m3color = "2026.1"
+room = "2.8.4"                     # latest release
+activityCompose = "1.13.0"         # latest release
+coreKtx = "1.19.0"
+coreSplashscreen = "1.2.0"
+# material-icons-extended is frozen upstream; 1.7.8 is its final release.
 compose = "1.7.8"
-material3 = "1.3.2"
-navigationCompose = "2.9.2"
-appcompat = "1.7.1"
-glanceAppwidget = "1.1.0"
-billing = "8.0.0"
+material3 = "1.4.0"                # latest stable (1.5.0 is alpha only)
+navigationCompose = "2.9.8"        # latest stable (2.10.0 is rc only)
+appcompat = "1.8.0"
 
 [libraries]
 # Room
 androidx-biometric-ktx = { module = "androidx.biometric:biometric-ktx", version.ref = "biometricKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-androidx-glance = { module = "androidx.glance:glance", version.ref = "glance" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
@@ -48,21 +51,19 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltA
 hilt-compile = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler"}
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+# Provides androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel — the package
+# hiltViewModel moved to in androidx.hilt 1.4.0. Pulled in transitively by
+# hilt-navigation-compose, but declared explicitly since we import from it directly.
+hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hiltNavigationCompose" }
 
-# Coil
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
-
-# Glance
-androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glanceAppwidget" }
+# Coil 3 — note the `coil-kt.coil3` group (coil 3 is repackaged)
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 
 # M3Color | https://github.com/Kyant0/m3color
 m3color = { module = "com.github.Kyant0:m3color", version.ref = "m3color" }
 
 # Argon2id — memory-hard password hashing
 argon2kt = { module = "com.lambdapioneer.argon2kt:argon2kt", version.ref = "argon2kt" }
-
-# Google Play Billing
-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 
 [plugins]
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

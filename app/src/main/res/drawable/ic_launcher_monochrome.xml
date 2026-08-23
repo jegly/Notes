@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Adaptive icon monochrome layer (themed icons).
+
+    Same verbatim concept geometry and same wrapping transform as
+    ic_launcher_foreground.xml, so the themed variant is that artwork stencilled
+    rather than a separate drawing: r=20 body discs at (30,55), (55,55), (80,55) in
+    the concept's native 110 tile, cut by r=23 circles at the next face's centre.
+
+    In themed mode the launcher discards the foreground AND background and tints only
+    this shape from the user's wallpaper, so the colours here are ignored — only alpha
+    matters and #000000 is a placeholder. The drop-shadow and lit discs are dropped
+    because in a single tint they carry no information; the body disc is the silhouette.
+
+    Eyes and mouths are punched with evenOdd — drawn features would be the same tint as
+    the face and vanish. The clip-path is load-bearing, not decorative: at this overlap
+    the rear faces' right eye and mouth tail fall outside the visible crescent, and an
+    unclipped evenOdd punch would render them as stray filled blobs beside the icon.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group
+        android:pivotX="55"
+        android:pivotY="55"
+        android:scaleX="0.6545"
+        android:scaleY="0.6545"
+        android:translateX="-1"
+        android:translateY="-1">
+
+        <!-- sad - clipped where the flat face overlaps -->
+        <group>
+            <clip-path
+                android:pathData="M0,0 L110,0 L110,110 L0,110 Z
+                                  M32,55 a23,23 0 1,0 46,0 a23,23 0 1,0 -46,0 Z" />
+            <path
+                android:fillColor="#000000"
+                android:fillType="evenOdd"
+                android:pathData="M10,55 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z
+                                  M20.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z
+                                  M32.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z
+                                  M20,65 Q29,55 38,65 Q29,62 20,65 Z" />
+        </group>
+
+        <!-- flat - clipped where the happy face overlaps -->
+        <group>
+            <clip-path
+                android:pathData="M0,0 L110,0 L110,110 L0,110 Z
+                                  M57,55 a23,23 0 1,0 46,0 a23,23 0 1,0 -46,0 Z" />
+            <path
+                android:fillColor="#000000"
+                android:fillType="evenOdd"
+                android:pathData="M35,55 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z
+                                  M45.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z
+                                  M57.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z
+                                  M45,58.25 L63,58.25 L63,61.75 L45,61.75 Z" />
+        </group>
+
+        <!-- happy - front, uncut -->
+        <path
+            android:fillColor="#000000"
+            android:fillType="evenOdd"
+            android:pathData="M60,55 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z
+                              M70.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z
+                              M82.6,50 a2.4,3.6 0 1,0 4.8,0 a2.4,3.6 0 1,0 -4.8,0 Z
+                              M70,57 Q79,68 88,57 Q79,61 70,57 Z" />
+    </group>
+</vector>

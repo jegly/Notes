@@ -29,10 +29,8 @@
     <string name="version">Wersja</string>
     <string name="latest_release">Najnowsze Wydanie</string>
     <string name="start_project">Daj Projektowi Gwiazdkę</string>
-    <string name="donate_me">Wesprzyj Mnie :)</string>
     <string name="restore">Przywróć</string>
     <string name="notes">Notatki</string>
-    <string name="support">Wsparcie</string>
     <string name="color_styles">Kolory i Style</string>
     <string name="language">Język</string>
     <string name="markdown">Markdown</string>

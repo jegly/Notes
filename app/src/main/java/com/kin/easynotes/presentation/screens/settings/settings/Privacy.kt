@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockClock
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
@@ -35,6 +36,32 @@ fun PrivacyScreen(navController: NavController, settingsViewModel: SettingsViewM
         onBackNavClicked = { navController.navigateUp() }
     ) {
         LazyColumn {
+            item {
+                // Instant lock — zeroizes the session and returns to the login screen
+                SettingsBox(
+                    settingsViewModel = settingsViewModel,
+                    title = stringResource(id = R.string.lock_now),
+                    description = stringResource(id = R.string.lock_now_description),
+                    icon = Icons.Rounded.Lock,
+                    radius = shapeManager(radius = settingsViewModel.settings.value.cornerRadius, isBoth = true),
+                    actionType = ActionType.CUSTOM,
+                    customAction = { onExit ->
+                        onExit()
+                        settingsViewModel.lock()
+                        navController.navigate(NavRoutes.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    customButton = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
+                            contentDescription = "",
+                            modifier = Modifier.scale(0.75f)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+            }
             item {
                 // Hardware security level — informational
                 SettingsBox(

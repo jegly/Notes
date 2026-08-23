@@ -28,7 +28,6 @@
     <string name="latest_release">Πιο πρόσφατη έκδοση</string>
     <string name="restore">Επανέφερε</string>
     <string name="notes">Σημειώσεις</string>
-    <string name="support">Υποστήριξη</string>
     <string name="color_styles"><![CDATA[Colors & Styles]]></string>
     <string name="language">Γλώσσα</string>
     <string name="tools">Εργαλεία</string>
@@ -91,7 +90,6 @@
     <string name="font_size">Μέγεθος Γραμματοσειράς</string>
     <string name="font_size_value">Μέγεθος Γραμματοσειράς: %1$d</string>
     <string name="font_size_preview_text">Έτσι θα φαίνονται οι σημειώσεις σου με το επιλεγμένο μέγεθος γραμματοσειράς.</string>
-    <string name="donate_me">Κάνε μια Δωρεά :)</string>
     <string name="widgets">Γραφικά Στοιχεία</string>
     <string name="description_color_styles">Θέματα • Μέγεθος • Γραμματοσειρά</string>
     <string name="description_language">Γραμματοσειρά • Γλώσσα</string>

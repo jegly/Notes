@@ -27,7 +27,6 @@ sealed class NavRoutes(val route: String) {
     data object Privacy : NavRoutes("settings/privacy")
     data object Markdown : NavRoutes("settings/markdown")
     data object History : NavRoutes("settings/history")
-    data object Widgets : NavRoutes("settings/widgets")
     data object About : NavRoutes("settings/about")
 }
 

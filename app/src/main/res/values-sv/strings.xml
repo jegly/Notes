@@ -42,14 +42,12 @@
     <string name="display">Visa</string>
     <string name="description_cloud">NextCloud • Lokalt • Kryptering</string>
     <string name="description_widgets">Widgetar • Markdown</string>
-    <string name="support">Support</string>
     <string name="about">Om</string>
     <string name="support_description">Visa din uppskattning</string>
     <string name="select_font">Typsnitt</string>
     <string name="select_radius">Välj rundning</string>
     <string name="minimalistic_mode">Minimalistiskt läge</string>
     <string name="cloud">Molnet</string>
-    <string name="donate_me">Donera till mig :)</string>
     <string name="description_about">Version • Utvecklare • Licens</string>
     <string name="description_markdown">Support • Bilder</string>
     <string name="radius">Rundning</string>

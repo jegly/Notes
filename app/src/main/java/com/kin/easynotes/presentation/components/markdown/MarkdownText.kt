@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
@@ -32,17 +31,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorProducer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.kin.easynotes.presentation.screens.settings.model.SettingsViewModel
 import com.kin.easynotes.presentation.screens.settings.settings.shapeManager
 import com.kin.easynotes.presentation.theme.linkColor
@@ -325,43 +327,30 @@ fun RenderMarkdownElement(
                     val sortedRanges = element.urlRanges.sortedBy { it.second.first }
                     
                     for ((url, range) in sortedRanges) {
-                        // Add text before the URL
                         if (range.first > lastIndex) {
                             val textBefore = fullText.substring(lastIndex, range.first)
                             append(buildString(textBefore, weight))
                         }
-                        
-                        // Add the URL with a different style and tag for clickability
-                        pushStringAnnotation("URL", url)
-                        withStyle(SpanStyle(color = linkColor, fontWeight = weight)) {
+                        withLink(
+                            LinkAnnotation.Url(
+                                url = url,
+                                styles = TextLinkStyles(SpanStyle(color = linkColor, fontWeight = weight)),
+                            )
+                        ) {
                             append(url)
                         }
-                        pop()
-                        
                         lastIndex = range.last + 1
                     }
-                    
-                    // Add any remaining text after the last URL
                     if (lastIndex < fullText.length) {
                         val textAfter = fullText.substring(lastIndex)
                         append(buildString(textAfter, weight))
                     }
                 }
-                
-                ClickableText(
+
+                Text(
                     text = annotatedString,
-                    onClick = { offset: Int ->
-                        annotatedString.getStringAnnotations("URL", offset, offset)
-                            .firstOrNull()?.let { annotation ->
-                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
-                                intent.data = android.net.Uri.parse(annotation.item)
-                                context.startActivity(intent)
-                            }
-                    },
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = fontSize,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    fontSize = fontSize,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             

@@ -43,13 +43,10 @@ fun PasswordSetupScreen(
     val focusRequester = remember { FocusRequester() }
     val isDeviceSecure = settingsViewModel.keystoreManager.isDeviceSecure()
 
-    val isEncrypting = settingsViewModel.isReEncrypting.value
-    LaunchedEffect(isEncrypting) {
-        if (submitted && !isEncrypting) {
-            if (isChangingPassword) navController.navigateUp()
-            else navController.navigate(NavRoutes.Home.route) { popUpToTop(navController) }
-        }
-    }
+    // Navigation is driven by the operation's own success callback, NOT by the
+    // isReEncrypting flag. That flag is cleared on both success and failure, so keying
+    // navigation off it sent the user into the app after key generation had failed —
+    // with no session and no key, leaving every subsequent save to fail.
 
     BackHandler {
         if (!isChangingPassword) (context as? ComponentActivity)?.finish()
@@ -88,7 +85,7 @@ fun PasswordSetupScreen(
         if (isChangingPassword && currentPassword.isBlank()) {
             errorMessage = context.getString(R.string.enter_password); return
         }
-        if (newPassword.length < 4) {
+        if (newPassword.length < 6) {
             errorMessage = context.getString(R.string.passcode_too_short); return
         }
         if (newPassword != confirmPassword) {
@@ -98,10 +95,25 @@ fun PasswordSetupScreen(
         submitted = true
         if (isChangingPassword) {
             settingsViewModel.changePassword(currentPassword, newPassword, context) { success ->
-                if (!success) { submitted = false; errorMessage = context.getString(R.string.passcode_incorrect); currentPassword = "" }
+                if (success) {
+                    navController.navigateUp()
+                } else {
+                    submitted = false
+                    errorMessage = context.getString(R.string.passcode_incorrect)
+                    currentPassword = ""
+                }
             }
         } else {
-            settingsViewModel.setPasswordFirstTime(newPassword, context) {}
+            settingsViewModel.setPasswordFirstTime(newPassword, context) { success ->
+                if (success) {
+                    navController.navigate(NavRoutes.Home.route) { popUpToTop(navController) }
+                } else {
+                    // Stay on setup. The ViewModel has already shown the specific reason.
+                    submitted = false
+                    newPassword = ""
+                    confirmPassword = ""
+                }
+            }
         }
     }
 

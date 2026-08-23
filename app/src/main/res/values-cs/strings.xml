@@ -20,7 +20,6 @@
     <string name="system_theme">Systémové Téma</string>
     <string name="dark_theme">Tmavé Téma</string>
     <string name="backup">Záloha</string>
-    <string name="donate_me">Přispěj Mi :)</string>
     <string name="markdown">Označit</string>
     <string name="widgets">Widgety</string>
     <string name="description_about">Verze • Vývojáři • Licence</string>
@@ -47,7 +46,6 @@
     <string name="about">O Aplikaci</string>
     <string name="start_project">Přidat Projekt do Oblíbených</string>
     <string name="restore">Obnovit</string>
-    <string name="support">Podpora</string>
     <string name="history">Historie</string>
     <string name="description_color_styles">Témata • Velikost• Font</string>
     <string name="cloud">Cloud</string>

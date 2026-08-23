@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     val noteUseCase: NoteUseCase,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : ViewModel() {
     var selectedNotes = mutableStateListOf<Note>()
 

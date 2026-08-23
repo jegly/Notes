@@ -10,51 +10,105 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 
-private const val DEFAULT_FADE_DURATION = 300
-private const val DEFAULT_SCALE_DURATION = 400
-private const val DEFAULT_SLIDE_DURATION = 400
-private const val DEFAULT_INITIAL_SCALE = 0.9f
+private const val SLIDE_FRACTION_DEN = 20
 
-fun getNoteEnterAnimation(): EnterTransition {
-    return fadeIn(animationSpec = tween(DEFAULT_FADE_DURATION)) + scaleIn(
-        initialScale = 0.9f,
-        animationSpec = tween(DEFAULT_SCALE_DURATION)
-    )
-}
+private fun fractionOffset(full: Int): Int = full / SLIDE_FRACTION_DEN
 
-fun getNoteExitAnimation(slideDirection: Int): ExitTransition {
-    return slideOutHorizontally(
+fun getNoteEnterAnimation(): EnterTransition =
+    fadeIn(animationSpec = tween(M3Motion.DurationMedium2, easing = M3Motion.Standard)) +
+        scaleIn(
+            initialScale = 0.92f,
+            animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedDecelerate),
+        )
+
+fun getNoteExitAnimation(slideDirection: Int): ExitTransition =
+    slideOutHorizontally(
         targetOffsetX = { slideDirection * it },
-        animationSpec = tween(durationMillis = DEFAULT_SLIDE_DURATION)
-    ) + fadeOut(animationSpec = tween(durationMillis = DEFAULT_FADE_DURATION))
-}
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedAccelerate),
+    ) + fadeOut(animationSpec = tween(M3Motion.DurationShort4, easing = M3Motion.Standard))
 
-fun defaultScreenEnterAnimation(): EnterTransition {
-    return fadeIn(animationSpec = tween(DEFAULT_FADE_DURATION)) +
-            scaleIn(
-                initialScale = DEFAULT_INITIAL_SCALE,
-                animationSpec = tween(DEFAULT_SCALE_DURATION)
-            )
-}
+// ── Shared axis X (forward push) ─────────────────────────────────────────────
+// Outgoing slides slightly left and fades; incoming slides in from the right.
 
-fun defaultScreenExitAnimation(): ExitTransition {
-    return fadeOut(animationSpec = tween(DEFAULT_FADE_DURATION)) +
-            scaleOut(
-                targetScale = DEFAULT_INITIAL_SCALE,
-                animationSpec = tween(DEFAULT_SCALE_DURATION)
-            )
-}
+fun defaultScreenEnterAnimation(): EnterTransition =
+    slideInHorizontally(
+        initialOffsetX = { fractionOffset(it) },
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedDecelerate),
+    ) + fadeIn(
+        animationSpec = tween(
+            durationMillis = M3Motion.DurationMedium2,
+            delayMillis = M3Motion.DurationShort2,
+            easing = M3Motion.Standard,
+        ),
+    )
 
-fun slideScreenEnterAnimation(): EnterTransition {
-    return slideInHorizontally(
+fun defaultScreenExitAnimation(): ExitTransition =
+    slideOutHorizontally(
+        targetOffsetX = { -fractionOffset(it) },
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedAccelerate),
+    ) + fadeOut(
+        animationSpec = tween(M3Motion.DurationShort3, easing = M3Motion.StandardAccelerate),
+    )
+
+// ── Shared axis X (backward pop) ─────────────────────────────────────────────
+// Mirrors the forward direction: incoming from the LEFT, outgoing to the RIGHT.
+
+fun defaultScreenPopEnterAnimation(): EnterTransition =
+    slideInHorizontally(
+        initialOffsetX = { -fractionOffset(it) },
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedDecelerate),
+    ) + fadeIn(
+        animationSpec = tween(
+            durationMillis = M3Motion.DurationMedium2,
+            delayMillis = M3Motion.DurationShort2,
+            easing = M3Motion.Standard,
+        ),
+    )
+
+fun defaultScreenPopExitAnimation(): ExitTransition =
+    slideOutHorizontally(
+        targetOffsetX = { fractionOffset(it) },
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedAccelerate),
+    ) + fadeOut(
+        animationSpec = tween(M3Motion.DurationShort3, easing = M3Motion.StandardAccelerate),
+    )
+
+// ── Full slide (used for opening Settings — feels like a drawer push) ────────
+
+fun slideScreenEnterAnimation(): EnterTransition =
+    slideInHorizontally(
         initialOffsetX = { fullWidth -> fullWidth },
-        animationSpec = tween(DEFAULT_SLIDE_DURATION)
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedDecelerate),
     )
-}
 
-fun slideScreenExitAnimation(): ExitTransition {
-    return slideOutHorizontally(
+fun slideScreenExitAnimation(): ExitTransition =
+    slideOutHorizontally(
         targetOffsetX = { fullWidth -> fullWidth },
-        animationSpec = tween(DEFAULT_SLIDE_DURATION)
+        animationSpec = tween(M3Motion.DurationMedium4, easing = M3Motion.EmphasizedAccelerate),
     )
-}
+
+// ── Fade-through (M3 spec for identity changes — e.g., login → home) ─────────
+// Outgoing fades quickly; incoming fades in after a short delay with a subtle scale.
+
+fun fadeThroughEnterAnimation(): EnterTransition =
+    fadeIn(
+        animationSpec = tween(
+            durationMillis = 210,
+            delayMillis = 90,
+            easing = M3Motion.Standard,
+        ),
+    ) + scaleIn(
+        initialScale = 0.92f,
+        animationSpec = tween(
+            durationMillis = 210,
+            delayMillis = 90,
+            easing = M3Motion.Standard,
+        ),
+    )
+
+fun fadeThroughExitAnimation(): ExitTransition =
+    fadeOut(animationSpec = tween(durationMillis = 90, easing = M3Motion.Standard)) +
+        scaleOut(
+            targetScale = 0.92f,
+            animationSpec = tween(durationMillis = 90, easing = M3Motion.Standard),
+        )

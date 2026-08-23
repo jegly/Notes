@@ -36,10 +36,8 @@
     <string name="version">संस्करण</string>
     <string name="start_project">परियोजना को तारांकित करें</string>
     <string name="latest_release">नवीनतम रिलीस</string>
-    <string name="donate_me">मुझे दान दें :)</string>
     <string name="restore">पुनर्स्थापित करें</string>
     <string name="notes">नोट्स</string>
-    <string name="support">समर्थन</string>
     <string name="color_styles">रंग एवं शैलियां</string>
     <string name="language">भाषा</string>
     <string name="markdown">मार्कडाउन</string>

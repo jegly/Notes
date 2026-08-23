@@ -1,6 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
@@ -8,38 +9,20 @@ plugins {
 
 android {
     namespace = "com.kin.easynotes"
-    compileSdk = 36
-    flavorDimensions += "store"
-
-    productFlavors {
-        create("fdroid") {
-            dimension = "store"
-            applicationId = "com.notes.app"
-            
-            isDefault = true
-        }
-
-        create("playstore") {
-            dimension = "store"
-            applicationId = "com.notes.app"
-            
-        }
-    }
+    // Must be >= targetSdk. Was 36 while targetSdk was already 37, which opts the app into
+    // every Android 17 behaviour change without compiling against the API that defines them.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.notes.app"
-        minSdk = 34
-        targetSdk = 36
-        versionCode = 21
-        versionName = "2.0.2"
+        minSdk = 33
+        targetSdk = 37
+        versionCode = 24
+        versionName = "2.3.0"
         vectorDrawables {
             useSupportLibrary = true
         }
 
-        // https://developer.android.com/guide/topics/resources/app-languages#gradle-config
-        resourceConfigurations.plus(
-            listOf("en", "ar", "de", "es", "fa", "fil", "fr", "hi", "it", "ja", "ru", "sk", "tr", "da", "nl", "pl", "tr", "uk", "vi", "ota", "pt-rBR", "sr", "zh-rCN")
-        )
     }
 
     buildTypes {
@@ -69,9 +52,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -84,22 +64,29 @@ android {
             useLegacyPackaging = false
         }
     }
-    buildToolsVersion = "36.0.0"
+    // buildToolsVersion is intentionally not pinned — AGP selects the version matching
+    // compileSdk. Pinning it to 36.0.0 alongside compileSdk 37 forces a mismatched toolchain.
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 dependencies {
     implementation(libs.argon2kt)
     implementation(libs.m3color)
     implementation(libs.androidx.biometric.ktx)
-    implementation(libs.androidx.glance)
     implementation(libs.coil.compose)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.hilt.lifecycle.viewmodel.compose)
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compile)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.room.ktx)
@@ -109,5 +96,4 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
-    "playstoreImplementation"(libs.billing)
 }

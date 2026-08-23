@@ -19,7 +19,6 @@
     <string name="version">Phiên bản</string>
     <string name="latest_release">Phát hành mới nhất</string>
     <string name="start_project">Sao cho Dự án</string>
-    <string name="donate_me">Quyên tặng cho tôi :)</string>
     <string name="restore">Khôi phục</string>
     <string name="tools">Công cụ</string>
     <string name="history">Lịch sử</string>
@@ -76,7 +75,6 @@
     <string name="screen_settings">Thiết đặt</string>
     <string name="display">Hiển thị</string>
     <string name="notes">Ghi chú</string>
-    <string name="support">Hỗ trợ</string>
     <string name="color_styles">Màu sắc &amp; Kiểu dáng</string>
     <string name="language">Ngôn ngữ</string>
     <string name="system_theme_description">Điều chỉnh chủ đề ứng dụng dựa trên thiết đặt hệ thống</string>

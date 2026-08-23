@@ -27,7 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -95,7 +95,7 @@ fun SupportBox(
         ) {
             Icon(
                 modifier = Modifier.scale(0.6f),
-                imageVector = Icons.Rounded.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )

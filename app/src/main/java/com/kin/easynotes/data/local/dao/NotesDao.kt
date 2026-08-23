@@ -12,8 +12,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoteDao {
 
+    /** Returns the row id of the inserted note, or -1 if the insert was ignored. */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addNote(note: Note)
+    suspend fun addNote(note: Note): Long
 
     @Query("SELECT * FROM `notes-table`")
     fun getAllNotes(): Flow<List<Note>>
@@ -26,7 +27,4 @@ interface NoteDao {
 
     @Query("SELECT * FROM `notes-table` WHERE id=:id")
     fun getNoteById(id: Int): Flow<Note?>
-
-    @Query("SELECT id FROM `notes-table` ORDER BY id DESC LIMIT 1")
-    fun getLastNoteId(): Long?
 }

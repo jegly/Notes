@@ -12,6 +12,5 @@ interface SettingsRepository {
     suspend fun putBoolean(key: String, value: Boolean)
     suspend fun getBoolean(key: String): Boolean?
 
-    suspend fun getEveryNotesWidget(): List<Pair<Int, Int>>
     suspend fun getPreferences(): Preferences
 }

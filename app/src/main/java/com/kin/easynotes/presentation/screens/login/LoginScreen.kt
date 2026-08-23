@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
-import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,6 +46,18 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
 
+    // Brute-force lockout countdown — refreshed once per second while this screen is visible
+    var lockoutRemainingSec by remember {
+        mutableStateOf(settingsViewModel.lockoutRemainingMs() / 1000)
+    }
+    LaunchedEffect(Unit) {
+        while (true) {
+            lockoutRemainingSec = settingsViewModel.lockoutRemainingMs() / 1000
+            kotlinx.coroutines.delay(1_000)
+        }
+    }
+    val isLockedOut = lockoutRemainingSec > 0
+
     // Check device screen lock on every login attempt
     val isDeviceSecure = settingsViewModel.keystoreManager.isDeviceSecure()
 
@@ -64,13 +75,7 @@ fun LoginScreen(
                         keyboardController?.hide()
                         focusManager.clearFocus()
                         settingsViewModel.onLoginSuccess("BIOMETRIC_AUTH")
-                        val pending = settingsViewModel.pendingWidgetNoteId
-                        if (pending != -1) {
-                            settingsViewModel.pendingWidgetNoteId = -1
-                            navController.navigate(NavRoutes.Edit.createRoute(pending, true)) { popUpToTop(navController) }
-                        } else {
-                            navController.navigate(NavRoutes.Home.route) { popUpToTop(navController) }
-                        }
+                        navController.navigate(NavRoutes.Home.route) { popUpToTop(navController) }
                     }
                 })
 
@@ -98,13 +103,6 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Lock,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(48.dp)
-            )
-            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(id = R.string.error_no_screen_lock),
                 color = MaterialTheme.colorScheme.error,
@@ -116,19 +114,26 @@ fun LoginScreen(
     }
 
     fun attempt() {
+        val remainingMs = settingsViewModel.lockoutRemainingMs()
+        if (remainingMs > 0) {
+            lockoutRemainingSec = remainingMs / 1000
+            errorMessage = context.getString(R.string.login_locked_out, (remainingMs / 1000).toInt() + 1)
+            return
+        }
         if (settingsViewModel.verifyPassword(password)) {
             keyboardController?.hide()
             focusManager.clearFocus()
             settingsViewModel.onLoginSuccess(password)
-            val pending = settingsViewModel.pendingWidgetNoteId
-            if (pending != -1) {
-                settingsViewModel.pendingWidgetNoteId = -1
-                navController.navigate(NavRoutes.Edit.createRoute(pending, true)) { popUpToTop(navController) }
-            } else {
-                navController.navigate(NavRoutes.Home.route) { popUpToTop(navController) }
-            }
+            navController.navigate(NavRoutes.Home.route) { popUpToTop(navController) }
         } else {
-            errorMessage = context.getString(R.string.passcode_incorrect)
+            settingsViewModel.registerFailedLogin()
+            val nowLockedMs = settingsViewModel.lockoutRemainingMs()
+            errorMessage = if (nowLockedMs > 0) {
+                lockoutRemainingSec = nowLockedMs / 1000
+                context.getString(R.string.login_locked_out, (nowLockedMs / 1000).toInt() + 1)
+            } else {
+                context.getString(R.string.passcode_incorrect)
+            }
             password = ""
         }
     }
@@ -138,13 +143,6 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Lock,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(48.dp)
-        )
-        Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(id = R.string.app_name),
             fontSize = 24.sp,
@@ -176,12 +174,23 @@ fun LoginScreen(
                 }
             }
         )
-        if (errorMessage != null) {
+        if (isLockedOut) {
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(id = R.string.login_locked_out, lockoutRemainingSec.toInt() + 1),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        } else if (errorMessage != null) {
             Spacer(modifier = Modifier.height(6.dp))
             Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { attempt() }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+        Button(
+            onClick = { attempt() },
+            enabled = !isLockedOut,
+            modifier = Modifier.fillMaxWidth().height(52.dp)
+        ) {
             Text(stringResource(id = R.string.enter_password))
         }
     }

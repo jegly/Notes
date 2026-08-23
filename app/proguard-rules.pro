@@ -21,6 +21,17 @@
 -keep class java.security.** { *; }
 
 # ---------------------------------------------------------------------------
+# Settings model — CRITICAL
+# SettingsUseCase persists each field by reflecting over Settings and using
+# field.name as the DataStore preference key. If R8 renames these fields the keys
+# change between builds, so every setting silently resets on update — including
+# passwordHash, which isSetup is derived from. Field names must stay stable.
+# ---------------------------------------------------------------------------
+-keepclassmembers class com.kin.easynotes.domain.model.Settings {
+    <fields>;
+}
+
+# ---------------------------------------------------------------------------
 # Room database
 # Entity, DAO and database classes are accessed via reflection by Room.
 # ---------------------------------------------------------------------------
@@ -54,11 +65,6 @@
 # DataStore / Preferences
 # ---------------------------------------------------------------------------
 -keep class androidx.datastore.** { *; }
-
-# ---------------------------------------------------------------------------
-# Glance (widgets)
-# ---------------------------------------------------------------------------
--keep class androidx.glance.** { *; }
 
 # ---------------------------------------------------------------------------
 # Coil (image loading)

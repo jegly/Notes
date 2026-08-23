@@ -30,10 +30,8 @@
     <string name="version">Versió</string>
     <string name="latest_release">Última Actualització</string>
     <string name="start_project">Dona\'ns una Estrella</string>
-    <string name="donate_me">Fes una donació :)</string>
     <string name="restore">Restaura</string>
     <string name="notes">Notes</string>
-    <string name="support">Suport</string>
     <string name="color_styles"><![CDATA[Colors i Estils]]></string>
     <string name="language">Idioma</string>
     <string name="markdown">Markdown</string>

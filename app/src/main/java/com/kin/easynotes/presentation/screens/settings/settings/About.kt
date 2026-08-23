@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -36,6 +37,16 @@ fun AboutScreen(navController: NavController, settingsViewModel: SettingsViewMod
                     icon = Icons.Rounded.Info,
                     actionType = ActionType.TEXT,
                     radius = shapeManager(isFirst = true, radius = settingsViewModel.settings.value.cornerRadius),
+                )
+            }
+            item {
+                SettingsBox(
+                    settingsViewModel = settingsViewModel,
+                    title = stringResource(id = R.string.developer),
+                    description = "Jegly",
+                    icon = Icons.Rounded.Person,
+                    actionType = ActionType.TEXT,
+                    radius = shapeManager(radius = settingsViewModel.settings.value.cornerRadius),
                 )
             }
             item {

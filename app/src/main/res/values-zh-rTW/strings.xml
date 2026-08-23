@@ -20,10 +20,8 @@
     <string name="version">版本</string>
     <string name="latest_release">最新版本</string>
     <string name="start_project">明星項目</string>
-    <string name="donate_me">贊助我 :)</string>
     <string name="restore">恢復</string>
     <string name="notes">全部筆記</string>
-    <string name="support">支援</string>
     <string name="color_styles">顏色與樣式</string>
     <string name="language">語言</string>
     <string name="markdown">Markdown</string>

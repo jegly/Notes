@@ -30,10 +30,8 @@
     <string name="version">Versiune</string>
     <string name="latest_release">Cea mai nouă lansare</string>
     <string name="start_project">Proiect stea</string>
-    <string name="donate_me">Doneazamă :)</string>
     <string name="restore">Restaurează</string>
     <string name="notes">Notițe</string>
-    <string name="support">Suport</string>
     <string name="color_styles"><![CDATA[Culori & Stiluri]]></string>
     <string name="language">Limbă</string>
     <string name="markdown">Markdown</string>

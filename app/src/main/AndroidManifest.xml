@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission
@@ -27,38 +27,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Notes"
-        tools:targetApi="36">
-        <receiver android:name=".widget.AddNoteReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/add_note" />
-        </receiver>
-        <receiver android:name=".widget.NotesWidgetReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/notes" />
-        </receiver>
-        <activity
-            android:name=".widget.NotesWidgetActivity"
-            android:exported="true"
-            android:permission="android.permission.UPDATE_WIDGETS">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-        </activity>
-
+        tools:targetApi="37">
+        <!--
+            configChanges: on a foldable, folding/unfolding is a configuration change. Without
+            this the activity is destroyed and recreated on every fold, and as of Android 17
+            the IME is no longer automatically restored afterwards — so the keyboard vanishes
+            mid-edit. Handling these in-process keeps Compose state and the keyboard intact.
+            uiMode is deliberately NOT listed, so dark-mode changes still recreate normally.
+        -->
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|density"
             android:windowSoftInputMode="adjustNothing"
             android:theme="@style/Theme.Notes">
 

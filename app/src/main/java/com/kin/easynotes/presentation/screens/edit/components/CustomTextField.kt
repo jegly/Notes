@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -23,19 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.autofill.AutofillNode
-import androidx.compose.ui.autofill.AutofillType
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.layout.boundsInWindow
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalAutofill
-import androidx.compose.ui.platform.LocalAutofillTree
-import com.kin.easynotes.presentation.components.AutoFillRequestHandler
-import com.kin.easynotes.presentation.components.connectNode
-import com.kin.easynotes.presentation.components.defaultFocusChangeAutoFill
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomTextField(
     value: TextFieldValue,
@@ -47,52 +34,27 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     hideContent: Boolean = false,
     useMonoSpaceFont: Boolean = false,
-    autofillTypes: List<AutofillType>? = null
 ) {
-    val autoFillHandler = if (autofillTypes != null) AutoFillRequestHandler(autofillTypes = autofillTypes,
-        onFill = {
-            onValueChange(TextFieldValue(it))
-        }
-    ) else null
-
     val visualTransformation = if (hideContent) {
         PasswordVisualTransformation()
     } else {
         VisualTransformation.None
     }
-    
-    // Determine if this is a password field based on autofill types or hideContent flag
-    val isPasswordField = hideContent || (autofillTypes != null && 
-        (autofillTypes.contains(AutofillType.Password) || 
-         autofillTypes.contains(AutofillType.NewPassword)))
 
-
-    
     TextField(
         value = value,
         textStyle = if (useMonoSpaceFont) LocalTextStyle.current.copy(fontFamily = FontFamily.Monospace) else LocalTextStyle.current,
         visualTransformation = visualTransformation,
-        onValueChange = {
-            onValueChange(it)
-            if (it.text.isEmpty()) autoFillHandler?.requestVerifyManual()
-        },
+        onValueChange = onValueChange,
         interactionSource = interactionSource,
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-            autoCorrect = !isPasswordField,
-            keyboardType = if (isPasswordField) KeyboardType.Password else KeyboardType.Text,
-            capitalization = if (isPasswordField) KeyboardCapitalization.None else KeyboardCapitalization.Sentences,
+            autoCorrectEnabled = !hideContent,
+            keyboardType = if (hideContent) KeyboardType.Password else KeyboardType.Text,
+            capitalization = if (hideContent) KeyboardCapitalization.None else KeyboardCapitalization.Sentences,
         ),
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape)
-            .then(
-                if (autoFillHandler != null) {
-                    Modifier
-                        .connectNode(handler = autoFillHandler)
-                        .defaultFocusChangeAutoFill(handler = autoFillHandler)
-                } else Modifier
-            ),
-
+            .clip(shape),
         singleLine = singleLine,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,

@@ -6,7 +6,6 @@
     <string name="created_time">Erstellungszeit</string>
     <string name="information">Informationen</string>
     <string name="search">Suche</string>
-    <string name="donate_me">Schenk mir :)</string>
     <string name="restore">Wiederherstellen</string>
     <string name="notes">Notizen</string>
     <string name="start_project">Bewerten Sie das Projekt</string>
@@ -18,7 +17,6 @@
     <string name="radius">Radius</string>
     <string name="display">Anzeige</string>
     <string name="system_theme">Farbschema des Systems</string>
-    <string name="support">Unterstützung</string>
     <string name="description_tools">Erstellt • Alle löschen</string>
     <string name="dark_theme">Dunkles Farbschema</string>
     <string name="select_font">Schriftart</string>

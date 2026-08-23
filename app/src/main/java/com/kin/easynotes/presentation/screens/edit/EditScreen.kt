@@ -38,8 +38,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -49,13 +51,13 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.kin.easynotes.R
@@ -86,14 +88,25 @@ fun EditNoteView(
     id: Int,
     settingsViewModel: SettingsViewModel,
     encrypted: Boolean = true,
-    isWidget: Boolean = false,
     onClickBack: () -> Unit
 ) {
     val viewModel: EditViewModel = hiltViewModel<EditViewModel>()
-    viewModel.setupNoteData(id)
+    // Keyed on id so it loads once per note, rather than on every recomposition.
+    LaunchedEffect(id) { viewModel.setupNoteData(id) }
     ObserveLifecycleEvents(viewModel)
 
-    val pagerState = rememberPagerState(initialPage = if (id == 0 || isWidget || settingsViewModel.settings.value.editMode) 0 else 1, pageCount = { 2 })
+    // Surface save failures instead of dropping them. Encryption legitimately fails when
+    // the device locks mid-edit; the text stays in the editor so it can be retried.
+    val context = LocalContext.current
+    val saveError = viewModel.saveError.value
+    LaunchedEffect(saveError) {
+        if (saveError != null) {
+            Toast.makeText(context, saveError, Toast.LENGTH_LONG).show()
+            viewModel.clearSaveError()
+        }
+    }
+
+    val pagerState = rememberPagerState(initialPage = if (id == 0 || settingsViewModel.settings.value.editMode) 0 else 1, pageCount = { 2 })
 
 
     val coroutineScope = rememberCoroutineScope()
@@ -116,7 +129,11 @@ fun TopBarActions(pagerState: PagerState, onClickBack: () -> Unit, viewModel: Ed
                 if (viewModel.isDescriptionInFocus.value) {
                     RedoButton { viewModel.redo() }
                 }
-                SaveButton { onClickBack() }
+                // Commit the note here, while the app is foregrounded and the device is
+                // unlocked, then leave. Previously this only navigated back and left the
+                // write to ON_STOP — which is exactly when the Keystore key becomes
+                // unusable, so the note was lost and the process crashed.
+                SaveButton { viewModel.saveNoteAndThen(viewModel.noteId.value) { onClickBack() } }
             }
         }
         1 -> {
@@ -203,7 +220,12 @@ fun ObserveLifecycleEvents(viewModel: EditViewModel) {
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
+            // ON_PAUSE, not ON_STOP. The master key is generated with
+            // setUnlockedDeviceRequired(true), so by ON_STOP the device may already be
+            // locked and the secure element will refuse to encrypt. ON_PAUSE runs earlier
+            // in the teardown, while the key is still usable. This is a backstop only —
+            // the debounced autosave in the ViewModel does the real work.
+            if (event == Lifecycle.Event.ON_PAUSE) {
                 viewModel.saveNote(viewModel.noteId.value)
             }
         }

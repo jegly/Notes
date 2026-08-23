@@ -13,7 +13,7 @@ import javax.inject.Inject
 // GalleryObserver class
 class GalleryObserver @Inject constructor(
     handler: Handler,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ContentObserver(handler) {
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
