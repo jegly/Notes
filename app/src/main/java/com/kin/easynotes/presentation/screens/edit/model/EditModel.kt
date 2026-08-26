@@ -131,6 +131,17 @@ class EditViewModel @Inject constructor(
 
     private var lastSaved: SavedSignature? = null
 
+    /**
+     * The row this editor session created, if it created one.
+     *
+     * Belt and braces against duplicate inserts. Resolving the target row from
+     * [noteId] alone means any ordering in which a second save reads it before the first
+     * save's id has landed produces a second INSERT rather than an UPDATE — two rows for
+     * one note, typically a title-only stub plus the real one. Once we have created a row,
+     * every later write in this session targets it, unconditionally.
+     */
+    private var createdRowId: Int? = null
+
     /** Result of decrypting both fields of a note off the main thread. */
     private data class DecryptedNote(
         val name: String?,
@@ -140,9 +151,18 @@ class EditViewModel @Inject constructor(
     )
 
     private suspend fun persist(id: Int) = saveMutex.withLock {
+        // Resolve the target row. createdRowId is last because it is the fallback that
+        // holds when neither the caller's id nor the observable state has caught up yet;
+        // taking 0 here would insert a second row for a note that already exists.
+        val targetId = when {
+            id != 0             -> id
+            noteId.value != 0   -> noteId.value
+            createdRowId != null -> createdRowId!!
+            else                -> 0
+        }
         // Snapshot the editor state on the caller's thread (main) before handing off.
         val snapshot = Note(
-            id = if (id != 0) id else noteId.value,
+            id = targetId,
             name = noteName.value.text,
             description = noteDescription.value.text,
             pinned = isPinned.value,
@@ -170,7 +190,9 @@ class EditViewModel @Inject constructor(
             result.fold(
                 onSuccess = { savedId ->
                     // Adopt the generated row id so subsequent saves update rather than
-                    // insert a duplicate.
+                    // insert a duplicate. Recorded in a plain field as well as in observable
+                    // state, so the next save cannot miss it.
+                    createdRowId = savedId
                     if (noteId.value == 0) updateNoteId(savedId)
                     lastSaved = signature.copy(id = savedId)
                     _saveError.value = null

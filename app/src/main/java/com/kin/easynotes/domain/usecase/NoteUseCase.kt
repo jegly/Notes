@@ -50,6 +50,15 @@ class NoteUseCase @Inject constructor(
     private class CacheEntry(val cipherName: String, val cipherDesc: String, val note: Note)
     private val decryptCache = ConcurrentHashMap<Int, CacheEntry>()
 
+    private companion object {
+        /**
+         * How often a partially-decrypted list is published. Long enough that an ordinary
+         * load publishes exactly once, short enough that a slow note does not hold up the
+         * ones already decrypted behind it.
+         */
+        const val PUBLISH_INTERVAL_MS = 250L
+    }
+
     fun observe() {
         observeJob?.cancel()
         observeJob = coroutineScope.launch {
@@ -95,9 +104,15 @@ class NoteUseCase @Inject constructor(
                     else                 -> worstResult
                 }
 
-                // Pass 2 — decrypt what's left, cheapest first so small notes appear straight
-                // away, and publish after each one rather than waiting for the whole batch.
+                // Pass 2 — decrypt what's left, cheapest first so small notes are never stuck
+                // behind an expensive one.
+                //
+                // Publishing is coalesced rather than per-note: on a cold start everything
+                // usually decrypts inside one interval, so the list appears once, complete.
+                // Publishing each note the moment it landed made them pop onto the screen
+                // one at a time, each running the grid's item enter animation separately.
                 pending.sortBy { it.description.length }
+                var lastPublish = System.currentTimeMillis()
                 for (note in pending) {
                     val (decryptedNote, status) = withContext(Dispatchers.Default) {
                         ensureActive()
@@ -111,8 +126,13 @@ class NoteUseCase @Inject constructor(
                     }
                     decryptCache[note.id] = CacheEntry(note.name, note.description, decryptedNote)
                     ready += decryptedNote
-                    notes = ArrayList(ready)
+                    val now = System.currentTimeMillis()
+                    if (now - lastPublish >= PUBLISH_INTERVAL_MS) {
+                        notes = ArrayList(ready)
+                        lastPublish = now
+                    }
                 }
+                notes = ArrayList(ready)
 
                 // Drop cache entries for notes that no longer exist.
                 decryptCache.keys.retainAll(rawNotes.mapTo(HashSet()) { it.id })

@@ -66,6 +66,7 @@ import com.kin.easynotes.presentation.components.MoreButton
 import com.kin.easynotes.presentation.components.NavigationIcon
 import com.kin.easynotes.presentation.components.material.MaterialScaffold
 import com.kin.easynotes.presentation.components.RedoButton
+import com.kin.easynotes.presentation.components.rememberDelayedLoading
 import com.kin.easynotes.presentation.components.SaveButton
 import com.kin.easynotes.presentation.components.UndoButton
 import com.kin.easynotes.presentation.components.markdown.MarkdownText
@@ -107,6 +108,8 @@ fun EditNoteView(
         }
     }
 
+    val showLoadingIndicator = rememberDelayedLoading(viewModel.isNoteLoading.value)
+
     val pagerState = rememberPagerState(initialPage = if (id == 0 || settingsViewModel.settings.value.editMode) 0 else 1, pageCount = { 2 })
 
 
@@ -118,9 +121,12 @@ fun EditNoteView(
             // Decryption runs off the main thread, so an existing note is not in the editor
             // yet when this first composes. Showing the empty fields in the meantime reads
             // as "the note is gone" — especially on a large note, where the wait is real.
+            // The indicator itself is delayed, so an ordinary note opens without a flicker.
             if (viewModel.isNoteLoading.value) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                if (showLoadingIndicator) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
             } else {
                 PagerContent(pagerState, viewModel, settingsViewModel, onClickBack)

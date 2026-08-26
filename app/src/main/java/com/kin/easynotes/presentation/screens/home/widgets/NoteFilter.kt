@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kin.easynotes.R
 import com.kin.easynotes.domain.model.Note
+import com.kin.easynotes.presentation.components.rememberDelayedLoading
 import com.kin.easynotes.presentation.screens.settings.model.SettingsViewModel
 
 @Composable
@@ -37,15 +38,21 @@ fun NoteFilter(
     onDeleteNote: (Int) -> Unit = {}
 ) {
     val filteredNotes = filterNotes(notes, searchText)
-    if (isLoading && filteredNotes.isEmpty()) {
+    val isDecrypting = isLoading && filteredNotes.isEmpty()
+    // Only admit to loading once it has actually taken a moment — otherwise the indicator
+    // appears and vanishes within a frame or two and reads as a flicker.
+    val showProgress = rememberDelayedLoading(isDecrypting)
+    if (isDecrypting) {
         // Still decrypting. This used to render nothing at all, to avoid a placeholder
         // flash — fine when decryption took milliseconds, but with a large note in the
         // database it left the user staring at an empty screen that read as data loss.
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+        if (showProgress) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     } else if (filteredNotes.isEmpty()) {
         Placeholder(

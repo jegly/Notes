@@ -80,7 +80,7 @@ fun NotesGrid(
                         style = TextStyle(fontSize = 10.sp, color = MaterialTheme.colorScheme.secondary)
                     )
                 }
-                items(pinnedNotes) { note ->
+                items(pinnedNotes, key = { it.id }) { note ->
                     Note(note, pinnedNotes)
                 }
                 if (otherNotes.isNotEmpty()) {
@@ -93,7 +93,7 @@ fun NotesGrid(
                     }
                 }
             }
-            items(otherNotes) { note ->
+            items(otherNotes, key = { it.id }) { note ->
                 Note(note, otherNotes)
             }
         },
