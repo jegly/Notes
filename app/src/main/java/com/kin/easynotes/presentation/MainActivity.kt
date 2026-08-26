@@ -2,6 +2,7 @@ package com.kin.easynotes.presentation
 
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -45,6 +46,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         enableEdgeToEdge()
+
+        // Opt the whole window out of autofill.
+        //
+        // Android hands a text field's entire contents to the autofill framework on every
+        // value change, over Binder, whose transaction limit is about 1MB. Pasting a large
+        // note therefore killed the process outright:
+        //
+        //   RuntimeException: android.os.TransactionTooLargeException: data parcel size 514720
+        //     at android.view.autofill.AutofillManager.notifyValueChanged
+        //
+        // Independently of the crash, an encrypted notes app has no business handing note
+        // text to whatever autofill service happens to be installed. There is nothing here
+        // autofill can usefully complete.
+        window.decorView.importantForAutofill =
+            View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
 
         setContent {
             settingsViewModel = hiltViewModel<SettingsViewModel>()
