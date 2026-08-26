@@ -1,12 +1,43 @@
+git tag -a 2.3.1 -m "v2.3.1" && git push origin 2.3.1
+
 # Release Notes — v2.3.1 (versionCode 25)
 
-Compiled on this machine — `:app:compileDebugKotlin` passes against the project's own
-Gradle 9.7.1 and JBR 21 toolchain. **Not run on a device.** Nothing below has been
-exercised against real hardware, and the behaviour this release fixes is specific to the
-secure element, so on-device verification matters more than usual here.
+**Not compiled or run on this machine** — the build is being done separately. Nothing below
+has been exercised against real hardware, and this release changes the stored ciphertext
+format and the crypto path, so on-device verification matters more than usual here.
 
 A point release. One user-visible theme: pasting a very large note made the app unusable,
 and once that note was in the database it stayed unusable.
+
+## Envelope encryption — the reason large notes were slow at all
+
+Every byte of a note's title and body was encrypted and decrypted by the Android Keystore
+key directly. StrongBox — which `generateKey()` prefers, and which Pixels have — is a
+discrete secure chip built for small operations; pushing half a megabyte through it is
+pathological. This was the root cause underneath every symptom below, not a contributing
+factor.
+
+Notes are now encrypted with a random per-note 256-bit data key, generated and used
+in process (ordinary AES-GCM, hardware-accelerated), with only that 32-byte data key
+wrapped by the Keystore key. The secure element handles 32 bytes instead of the whole note.
+
+What does **not** change: the master key is still generated in StrongBox where available,
+still carries `setUnlockedDeviceRequired(true)`, still never leaves the secure element, and
+is still destroyed on uninstall. A wrapped data key is worthless without it, so at-rest
+security is unchanged.
+
+What **does** change, stated plainly: a per-note data key now exists in the JVM heap while
+that note is being read or written. The local copy is zeroed after use, though the copy
+`SecretKeySpec` makes internally is left to the GC. An attacker able to read process memory
+of an unlocked app mid-operation could recover a data key for the note being handled;
+previously they would have recovered nothing. This is the standard envelope trade-off and
+the reason encrypting large payloads is practical at all. The README's security table has
+been amended rather than left overstating the guarantee.
+
+Storage format is now `v3:<master-iv>:<wrapped-key>:<data-iv>:<data-ciphertext>`. The
+previous two-part format is still read, so existing notes open normally; they convert to
+the new format the next time they are saved. There is no migration pass and nothing is
+rewritten unprompted.
 
 ## Large notes made the whole app unresponsive
 
@@ -39,6 +70,17 @@ a note and backing out without editing rewrote it. It now fingerprints what it l
 (hashes and lengths, not the strings, to avoid retaining a second copy) and skips redundant
 writes. The fingerprint is seeded when a note loads, so a read-only visit writes nothing.
 
+**The note list was published in one batch at the end.** `notes` was assigned only once
+every note had decrypted, so a single large note withheld all the others — the list stayed
+empty until the slowest note finished. Notes are now published as each one completes, and
+the outstanding ones are decrypted cheapest-first, so small notes appear immediately.
+
+**Loading looked like data loss.** `NoteFilter` deliberately rendered nothing while loading
+with an empty list, to avoid a placeholder flash — reasonable at 50 ms, alarming at 50
+seconds. It now shows a progress indicator. The editor did the same thing: decryption moved
+off the main thread, so it painted an empty note and filled it in later, which read as the
+note having been wiped. It now shows a spinner until the note is actually in hand.
+
 **Undo history was unbounded.** `UndoRedoState.onInput()` pushed a complete copy of the
 field's text on every input event and nothing was ever dropped. At roughly 500 KB per
 snapshot, a hundred keystrokes retained around 50 MB — this was the actual crash. History
@@ -70,11 +112,9 @@ rather than an OOM.
 
 ## Known follow-ups
 
-- **Note body still passes through the secure element byte for byte.** The proper fix is
-  envelope encryption: bulk-encrypt the body with a random per-note data key in-process,
-  and put only that 32-byte key through the Keystore. Same security posture, and the secure
-  element handles 32 bytes instead of half a megabyte. It is a stored-format change and
-  needs a migration, so it is deliberately not in this release.
+- **Old-format notes convert only on save.** A note written before 2.3.1 keeps paying the
+  old cost every time it is read until something rewrites it. Opening and saving it once is
+  enough. A one-shot background conversion pass would be better but is not in this release.
 - **The 2 MB `CursorWindow` row limit is unguarded.** Base64 inflates ciphertext by roughly
   1.37×, so a note past about 1.4 MB of text will fail to load with no useful error.
 - Everything still open from 2.3.0 below, in particular release builds signing with the
@@ -82,16 +122,22 @@ rather than an OOM.
 
 ## Verification status
 
-Compiles. Not run. Recommended before publishing:
+Not compiled here, not run. Required before publishing:
 
-1. Unlock with biometrics with the large note already in the database — should reach the
-   note list without an ANR dialog.
-2. Create a new, unrelated note while that large note exists. This is the case that was
+1. **Upgrade path, before anything else.** Install over an existing 2.3.0 install with real
+   notes in it. Every note must still open — they are in the old format and exercise the
+   compatibility branch. Losing this is losing user data.
+2. Save one of those old notes, then reopen it, confirming the round trip through the new
+   format works.
+3. Unlock with biometrics with a large note in the database — the list should show a
+   spinner, then small notes, then the large one.
+4. Create a new, unrelated note while a large note exists. This is the case that was
    reported broken.
-3. Open the large note and back out without editing — should be immediate, and should not
-   write to the database.
-4. Type in a large note for a sustained period, then exercise undo and redo.
-5. Confirm the title/body undo separation: type a title, edit the body, undo.
+5. Open the large note. It should show a spinner and then the text, and should now be
+   fast rather than merely non-blocking.
+6. Back out of a note without editing — should not write to the database.
+7. Type in a large note for a sustained period, then exercise undo and redo.
+8. Confirm the title/body undo separation: type a title, edit the body, undo.
 
 ---
 

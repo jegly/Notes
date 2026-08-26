@@ -7,7 +7,7 @@
 ---
 
 
-Your notes are encrypted with AES-256-GCM. The key lives in your device's secure hardware — TEE or StrongBox, depending on your chip. It never touches the JVM heap. When you uninstall the app, the key is gone, and there is no recovery path for it, because there is no key to recover.
+Your notes are encrypted with AES-256-GCM. The master key lives in your device's secure hardware — TEE or StrongBox, depending on your chip — and never leaves it. Each note gets its own random data key, and the master key wraps that; only those 32 bytes ever pass through the secure element, which is what keeps large notes fast. A note's data key exists in app memory only while that note is being read or written, and is worthless without the hardware key. When you uninstall the app, the master key is gone, and there is no recovery path for it, because there is no key to recover.
 
 That key never leaves the device, so it cannot move to a new phone with you. If you want your notes to survive a reinstall or a new device, take an encrypted backup first — it is protected by a passphrase you choose rather than by the hardware key, which is precisely what makes it portable.
 
@@ -44,12 +44,19 @@ That key never leaves the device, so it cannot move to a new phone with you. If 
 
 ## Large notes
 
-A note's title and body are each encrypted and decrypted as a single unit through the
-secure element, so the cost scales with how much text the note holds. As of 2.3.1 that work
-runs off the main thread, decrypted content is cached against its stored ciphertext so an
-unrelated save no longer re-decrypts every other note, and undo history is bounded by both
-depth and total size. A very large note still takes a moment to save; it no longer freezes
-the app or grows the heap without limit.
+Up to 2.3.0 a note's title and body each went through the secure element in full. That is
+fine for a shopping list and pathological for anything big — StrongBox is built for small
+operations, and a note of a few thousand lines took minutes to save and minutes to load.
+
+2.3.1 switched to envelope encryption: the body is encrypted in process with a random
+per-note data key, and only that 32-byte key goes through the secure element. Alongside
+that, decryption runs off the main thread, notes are published to the list as each one
+finishes rather than in a single batch at the end, decrypted content is cached against its
+stored ciphertext so an unrelated save no longer re-decrypts everything, and undo history
+is bounded by both depth and total size.
+
+Notes written before 2.3.1 are still readable; they convert to the new format the next time
+you save them. Nothing is rewritten behind your back.
 
 One hard ceiling remains. Android caps a single database row at 2 MB, and Base64 inflates
 stored ciphertext by roughly 1.37×, so a note beyond roughly 1.4 MB of text — on the order
@@ -62,8 +69,10 @@ of 30,000 lines — will fail to load. Split notes that approach that size.
 | Property | Implementation |
 |---|---|
 | Encryption | AES-256-GCM, per-note |
-| Key storage | Android Keystore (TEE / StrongBox) |
+| Key hierarchy | Envelope — a random per-note data key, wrapped by the hardware master key |
+| Key storage | Android Keystore (TEE / StrongBox) — master key only, never extractable |
 | Key lifetime | Device-bound; destroyed on uninstall |
+| Data key exposure | In app memory only during a read or write of that note; unusable without the hardware key |
 | Password hashing | Argon2id — 64 MB, 3 iterations |
 | Biometric unlock | `BiometricPrompt` — unlocks Keystore key, never touches password |
 | Screen lock requirement | Enforced at runtime |

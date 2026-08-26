@@ -62,45 +62,61 @@ class NoteUseCase @Inject constructor(
                 }
 
                 var worstResult: DecryptionResult = DecryptionResult.SUCCESS
+                val ready = ArrayList<Note>(rawNotes.size)
+                val pending = ArrayList<Note>()
 
-                // Decryption cost scales with note size and runs through the Keystore, so it
-                // must never happen on the main thread — this scope is Main-dispatched.
-                val processed = withContext(Dispatchers.Default) {
-                    val result = rawNotes.mapNotNull { note ->
-                        ensureActive()
-                        if (!note.encrypted) {
-                            // Plain note — shouldn't exist after setup but handle gracefully
-                            return@mapNotNull note
-                        }
-                        val cached = decryptCache[note.id]
-                        if (cached != null &&
-                            cached.cipherName == note.name &&
-                            cached.cipherDesc == note.description
-                        ) {
-                            // Unchanged ciphertext — reuse the plaintext, but take metadata
-                            // from the fresh row.
-                            return@mapNotNull cached.note.copy(
-                                pinned = note.pinned,
-                                createdAt = note.createdAt
-                            )
-                        }
-                        val (decryptedNote, status) = decryptNote(note)
-                        // Track worst result across all notes — don't let last note win
-                        if (status != DecryptionResult.SUCCESS) {
-                            worstResult = status
-                            decryptCache.remove(note.id)
-                            return@mapNotNull null
-                        }
-                        decryptCache[note.id] = CacheEntry(note.name, note.description, decryptedNote)
-                        decryptedNote
+                // Pass 1 — everything already available without touching the secure element.
+                // Publishing these first means one slow note can never hide the rest; the
+                // list used to be assigned in a single batch at the very end, so a large
+                // note left the screen empty until it finished.
+                for (note in rawNotes) {
+                    if (!note.encrypted) {
+                        // Plain note — shouldn't exist after setup but handle gracefully
+                        ready += note
+                        continue
                     }
-                    // Drop cache entries for notes that no longer exist.
-                    decryptCache.keys.retainAll(rawNotes.mapTo(HashSet()) { it.id })
-                    result
+                    val cached = decryptCache[note.id]
+                    if (cached != null &&
+                        cached.cipherName == note.name &&
+                        cached.cipherDesc == note.description
+                    ) {
+                        // Unchanged ciphertext — reuse the plaintext, but take metadata
+                        // from the fresh row.
+                        ready += cached.note.copy(pinned = note.pinned, createdAt = note.createdAt)
+                    } else {
+                        pending += note
+                    }
                 }
 
+                notes = ArrayList(ready)
+                decryptionResult = when {
+                    rawNotes.isEmpty()   -> DecryptionResult.EMPTY
+                    pending.isNotEmpty() -> DecryptionResult.LOADING
+                    else                 -> worstResult
+                }
+
+                // Pass 2 — decrypt what's left, cheapest first so small notes appear straight
+                // away, and publish after each one rather than waiting for the whole batch.
+                pending.sortBy { it.description.length }
+                for (note in pending) {
+                    val (decryptedNote, status) = withContext(Dispatchers.Default) {
+                        ensureActive()
+                        decryptNote(note)
+                    }
+                    if (status != DecryptionResult.SUCCESS) {
+                        // Track worst result across all notes — don't let last note win
+                        worstResult = status
+                        decryptCache.remove(note.id)
+                        continue
+                    }
+                    decryptCache[note.id] = CacheEntry(note.name, note.description, decryptedNote)
+                    ready += decryptedNote
+                    notes = ArrayList(ready)
+                }
+
+                // Drop cache entries for notes that no longer exist.
+                decryptCache.keys.retainAll(rawNotes.mapTo(HashSet()) { it.id })
                 decryptionResult = if (rawNotes.isEmpty()) DecryptionResult.EMPTY else worstResult
-                notes = processed
             }
         }
     }

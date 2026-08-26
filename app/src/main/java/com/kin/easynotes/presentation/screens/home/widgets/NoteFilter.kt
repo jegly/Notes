@@ -1,13 +1,17 @@
 package com.kin.easynotes.presentation.screens.home.widgets
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,7 +38,15 @@ fun NoteFilter(
 ) {
     val filteredNotes = filterNotes(notes, searchText)
     if (isLoading && filteredNotes.isEmpty()) {
-        // still fetching — show nothing to avoid a placeholder flash
+        // Still decrypting. This used to render nothing at all, to avoid a placeholder
+        // flash — fine when decryption took milliseconds, but with a large note in the
+        // database it left the user staring at an empty screen that read as data loss.
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     } else if (filteredNotes.isEmpty()) {
         Placeholder(
             placeholderIcon = {

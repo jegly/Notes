@@ -69,6 +69,14 @@ class EditViewModel @Inject constructor(
     private val _saveError = mutableStateOf<String?>(null)
     val saveError: State<String?> get() = _saveError
 
+    /**
+     * True while an existing note is being decrypted. Decryption moved off the main thread,
+     * so without this the editor paints an empty note first and fills it in later — which
+     * looks exactly like the note was lost.
+     */
+    private val _isNoteLoading = mutableStateOf(false)
+    val isNoteLoading: State<Boolean> get() = _isNoteLoading
+
     // Serialises saves so a debounced autosave and an explicit save can never race and
     // insert the same new note twice.
     private val saveMutex = Mutex()
@@ -228,46 +236,55 @@ class EditViewModel @Inject constructor(
     fun setupNoteData(id: Int = noteId.value) {
         if (id == 0 || isLoaded) return
         isLoaded = true
+        _isNoteLoading.value = true
         viewModelScope.launch {
-            val note = runCatching { noteUseCase.getNoteById(id).first() }.getOrNull() ?: return@launch
-            // Note from DB is still raw ciphertext — decrypt for display
-            if (note.encrypted) {
-                // viewModelScope is main-dispatched and decryption cost scales with note
-                // size, so opening a large note here froze the UI for as long as the
-                // secure element took to run through the whole body.
-                val (name, nameStatus, description, descStatus) = withContext(Dispatchers.Default) {
-                    val (n, nStatus) = encryption.decrypt(note.name)
-                    val (d, dStatus) = encryption.decrypt(note.description)
-                    DecryptedNote(n, nStatus, d, dStatus)
-                }
-                if (nameStatus == DecryptionResult.SUCCESS && descStatus == DecryptionResult.SUCCESS) {
-                    updateNoteName(TextFieldValue(name!!, selection = TextRange(name.length)))
-                    updateNoteDescription(TextFieldValue(description!!, selection = TextRange(description.length)))
-                    // Opening a note is not an edit. Without this, backing straight out of a
-                    // note re-encrypted and rewrote it unchanged.
-                    lastSaved = SavedSignature(
-                        id = note.id,
-                        nameHash = name.hashCode(),
-                        nameLength = name.length,
-                        descriptionHash = description.hashCode(),
-                        descriptionLength = description.length,
-                        pinned = note.pinned,
-                    )
-                } else {
-                    // Could not decrypt — surface it instead of silently showing an empty
-                    // editor that would overwrite the real note on the next save.
-                    isDeleted = true
-                    _saveError.value = "This note could not be decrypted on this device."
-                }
-            } else {
-                syncNote(note)
+            try {
+                loadNote(id)
+            } finally {
+                _isNoteLoading.value = false
             }
-            updateNoteCreatedTime(note.createdAt)
-            updateNoteId(note.id)
-            updateNotePin(note.pinned)
-            // Loading the note counts as input to the undo stack; don't let it trigger a write.
-            autoSaveJob?.cancel()
         }
+    }
+
+    private suspend fun loadNote(id: Int) {
+        val note = runCatching { noteUseCase.getNoteById(id).first() }.getOrNull() ?: return
+        // Note from DB is still raw ciphertext — decrypt for display
+        if (note.encrypted) {
+            // viewModelScope is main-dispatched and decryption cost scales with note
+            // size, so opening a large note here froze the UI for as long as the
+            // secure element took to run through the whole body.
+            val (name, nameStatus, description, descStatus) = withContext(Dispatchers.Default) {
+                val (n, nStatus) = encryption.decrypt(note.name)
+                val (d, dStatus) = encryption.decrypt(note.description)
+                DecryptedNote(n, nStatus, d, dStatus)
+            }
+            if (nameStatus == DecryptionResult.SUCCESS && descStatus == DecryptionResult.SUCCESS) {
+                updateNoteName(TextFieldValue(name!!, selection = TextRange(name.length)))
+                updateNoteDescription(TextFieldValue(description!!, selection = TextRange(description.length)))
+                // Opening a note is not an edit. Without this, backing straight out of a
+                // note re-encrypted and rewrote it unchanged.
+                lastSaved = SavedSignature(
+                    id = note.id,
+                    nameHash = name.hashCode(),
+                    nameLength = name.length,
+                    descriptionHash = description.hashCode(),
+                    descriptionLength = description.length,
+                    pinned = note.pinned,
+                )
+            } else {
+                // Could not decrypt — surface it instead of silently showing an empty
+                // editor that would overwrite the real note on the next save.
+                isDeleted = true
+                _saveError.value = "This note could not be decrypted on this device."
+            }
+        } else {
+            syncNote(note)
+        }
+        updateNoteCreatedTime(note.createdAt)
+        updateNoteId(note.id)
+        updateNotePin(note.pinned)
+        // Loading the note counts as input to the undo stack; don't let it trigger a write.
+        autoSaveJob?.cancel()
     }
 
     fun toggleEditMenuVisibility(value: Boolean) { _isEditMenuVisible.value = value }

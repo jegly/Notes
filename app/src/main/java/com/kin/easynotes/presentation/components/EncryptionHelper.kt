@@ -60,13 +60,17 @@ class EncryptionHelper(
         if (data.isBlank())               return Pair(null, DecryptionResult.BLANK_DATA)
         return try {
             val parts = data.split(":")
-            when (parts.size) {
-                2 -> {
+            val isEnvelope = parts.size == KeystoreManager.ENVELOPE_PARTS &&
+                    parts[0] == KeystoreManager.ENVELOPE_PREFIX
+            when {
+                // v3 envelope (2.3.1+) and the older direct-Keystore form are both read by
+                // KeystoreManager; it picks the right path off the same string.
+                isEnvelope || parts.size == KeystoreManager.DIRECT_PARTS -> {
                     val result = keystoreManager.decrypt(data)
                     if (result.isSuccess) Pair(result.getOrNull(), DecryptionResult.SUCCESS)
                     else Pair(null, DecryptionResult.BAD_PASSWORD)
                 }
-                3 -> Pair(null, DecryptionResult.LEGACY_FORMAT) // pre-v2 format
+                parts.size == 3 -> Pair(null, DecryptionResult.LEGACY_FORMAT) // pre-v2 format
                 else -> Pair(null, DecryptionResult.INVALID_DATA)
             }
         } catch (e: Exception) {

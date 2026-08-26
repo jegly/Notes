@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.RemoveRedEye
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -113,7 +114,18 @@ fun EditNoteView(
 
     MaterialScaffold(
         topBar = { if (!settingsViewModel.settings.value.minimalisticMode) TopBar(pagerState, coroutineScope,onClickBack, viewModel) },
-        content = { PagerContent(pagerState, viewModel, settingsViewModel, onClickBack) }
+        content = {
+            // Decryption runs off the main thread, so an existing note is not in the editor
+            // yet when this first composes. Showing the empty fields in the meantime reads
+            // as "the note is gone" — especially on a large note, where the wait is real.
+            if (viewModel.isNoteLoading.value) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                PagerContent(pagerState, viewModel, settingsViewModel, onClickBack)
+            }
+        }
     )
 }
 

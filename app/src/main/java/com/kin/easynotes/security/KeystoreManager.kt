@@ -7,11 +7,13 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyInfo
 import android.security.keystore.KeyProperties
 import java.security.KeyStore
+import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * Manages the AES-256-GCM master key stored in Android Keystore (TEE/StrongBox).
@@ -32,6 +34,16 @@ class KeystoreManager(private val context: Context) {
         private const val KEY_ALIAS          = "notes_master_key_v2"
         private const val GCM_TAG_BITS       = 128
         private const val KEY_SIZE_BITS      = 256
+        private const val TRANSFORMATION     = "AES/GCM/NoPadding"
+
+        /** Marker for the envelope format introduced in 2.3.1. */
+        const val ENVELOPE_PREFIX            = "v3"
+        const val ENVELOPE_PARTS             = 5
+
+        /** Pre-2.3.1 format: the body was encrypted directly by the Keystore key. */
+        const val DIRECT_PARTS               = 2
+
+        private const val DATA_KEY_BYTES     = 32
     }
 
     sealed class KeystoreError(override val message: String) : Exception(message) {
@@ -149,42 +161,106 @@ class KeystoreManager(private val context: Context) {
     }
 
     /**
-     * Encrypt data using the Keystore-backed key.
-     * The key never leaves the secure element — we get a Cipher reference backed by it.
-     * Returns "<base64-iv>:<base64-ciphertext+tag>"
+     * Encrypt data using envelope encryption.
+     *
+     * The payload is encrypted in-process with a random 256-bit data key — ordinary AES-GCM,
+     * hardware-accelerated, hundreds of MB/s — and only that 32-byte data key is passed
+     * through the secure element. Previously the entire payload went through the Keystore,
+     * and StrongBox in particular is built for small operations: a note of a few thousand
+     * lines took minutes to save and minutes to load.
+     *
+     * The trade-off, stated plainly: the per-note data key exists in the JVM heap for the
+     * duration of the call. The local copy is zeroed afterwards, though the copy `SecretKeySpec`
+     * makes internally is left to the GC. The master key still never leaves the secure element,
+     * `setUnlockedDeviceRequired` still governs it, and a wrapped data key is useless without
+     * it. This is the standard envelope construction.
+     *
+     * Format: "v3:<master-iv>:<wrapped-data-key>:<data-iv>:<data-ciphertext>", each base64.
      */
     fun encrypt(plaintext: String): Result<String> {
+        val dataKeyBytes = ByteArray(DATA_KEY_BYTES)
         return try {
-            val key = getKey() ?: return Result.failure(KeystoreError.KeyNotFound)
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, key)
-            val iv             = cipher.iv
-            val ciphertext     = cipher.doFinal(plaintext.toByteArray(Charsets.UTF_8))
-            val ivB64          = android.util.Base64.encodeToString(iv, android.util.Base64.NO_WRAP)
-            val ctB64          = android.util.Base64.encodeToString(ciphertext, android.util.Base64.NO_WRAP)
-            Result.success("$ivB64:$ctB64")
+            val masterKey = getKey() ?: return Result.failure(KeystoreError.KeyNotFound)
+
+            SecureRandom().nextBytes(dataKeyBytes)
+            val dataKey = SecretKeySpec(dataKeyBytes, KeyProperties.KEY_ALGORITHM_AES)
+
+            // Bulk work, in-process.
+            val dataCipher = Cipher.getInstance(TRANSFORMATION)
+            dataCipher.init(Cipher.ENCRYPT_MODE, dataKey)
+            val dataIv = dataCipher.iv
+            val dataCt = dataCipher.doFinal(plaintext.toByteArray(Charsets.UTF_8))
+
+            // The only thing that crosses into the secure element: 32 bytes.
+            val wrapCipher = Cipher.getInstance(TRANSFORMATION)
+            wrapCipher.init(Cipher.ENCRYPT_MODE, masterKey)
+            val masterIv   = wrapCipher.iv
+            val wrappedKey = wrapCipher.doFinal(dataKeyBytes)
+
+            Result.success(
+                listOf(ENVELOPE_PREFIX, b64(masterIv), b64(wrappedKey), b64(dataIv), b64(dataCt))
+                    .joinToString(":")
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        } finally {
+            dataKeyBytes.fill(0)
+        }
+    }
+
+    /**
+     * Decrypt data written by [encrypt].
+     *
+     * Reads both the current envelope format and the pre-2.3.1 format, where the body was
+     * encrypted directly by the Keystore key. Old notes are never rewritten in place — they
+     * convert to the new format the next time they are saved.
+     */
+    fun decrypt(ciphertext: String): Result<String> {
+        return try {
+            val masterKey = getKey() ?: return Result.failure(KeystoreError.KeyNotFound)
+            val parts     = ciphertext.split(":")
+            when {
+                parts.size == ENVELOPE_PARTS && parts[0] == ENVELOPE_PREFIX ->
+                    decryptEnvelope(masterKey, parts)
+                parts.size == DIRECT_PARTS ->
+                    decryptDirect(masterKey, parts)
+                else ->
+                    Result.failure(Exception("Invalid ciphertext format"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    /**
-     * Decrypt data using the Keystore-backed key.
-     */
-    fun decrypt(ciphertext: String): Result<String> {
+    private fun decryptEnvelope(masterKey: SecretKey, parts: List<String>): Result<String> {
+        val unwrap = Cipher.getInstance(TRANSFORMATION)
+        unwrap.init(Cipher.DECRYPT_MODE, masterKey, GCMParameterSpec(GCM_TAG_BITS, unb64(parts[1])))
+        val dataKeyBytes = unwrap.doFinal(unb64(parts[2]))
         return try {
-            val key    = getKey() ?: return Result.failure(KeystoreError.KeyNotFound)
-            val parts  = ciphertext.split(":")
-            if (parts.size != 2) return Result.failure(Exception("Invalid ciphertext format"))
-            val iv     = android.util.Base64.decode(parts[0], android.util.Base64.NO_WRAP)
-            val ct     = android.util.Base64.decode(parts[1], android.util.Base64.NO_WRAP)
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(GCM_TAG_BITS, iv))
-            Result.success(String(cipher.doFinal(ct), Charsets.UTF_8))
-        } catch (e: Exception) {
-            Result.failure(e)
+            val dataCipher = Cipher.getInstance(TRANSFORMATION)
+            dataCipher.init(
+                Cipher.DECRYPT_MODE,
+                SecretKeySpec(dataKeyBytes, KeyProperties.KEY_ALGORITHM_AES),
+                GCMParameterSpec(GCM_TAG_BITS, unb64(parts[3]))
+            )
+            Result.success(String(dataCipher.doFinal(unb64(parts[4])), Charsets.UTF_8))
+        } finally {
+            dataKeyBytes.fill(0)
         }
     }
+
+    /** Pre-2.3.1 notes: the Keystore key encrypted the body directly. */
+    private fun decryptDirect(masterKey: SecretKey, parts: List<String>): Result<String> {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.DECRYPT_MODE, masterKey, GCMParameterSpec(GCM_TAG_BITS, unb64(parts[0])))
+        return Result.success(String(cipher.doFinal(unb64(parts[1])), Charsets.UTF_8))
+    }
+
+    private fun b64(bytes: ByteArray): String =
+        android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+
+    private fun unb64(text: String): ByteArray =
+        android.util.Base64.decode(text, android.util.Base64.NO_WRAP)
 
     /**
      * Delete the master key — called on explicit user request.
