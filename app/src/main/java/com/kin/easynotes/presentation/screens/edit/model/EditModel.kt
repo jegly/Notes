@@ -1,5 +1,6 @@
 package com.kin.easynotes.presentation.screens.edit.model
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -8,6 +9,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kin.easynotes.BuildConfig
 import com.kin.easynotes.domain.model.Note
 import com.kin.easynotes.domain.usecase.NoteUseCase
 import com.kin.easynotes.presentation.components.DecryptionResult
@@ -180,6 +182,20 @@ class EditViewModel @Inject constructor(
         // Nothing changed since the last successful write — don't pay for it again.
         if (signature == lastSaved) return@withLock
 
+        // Debug-only trace of every write that actually reaches the database. `vm` is the
+        // ViewModel identity: two different values for one note means a second editor
+        // instance exists, which would explain a duplicate row that the id bookkeeping
+        // above cannot. Filter logcat on SAVE_TAG.
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                SAVE_TAG,
+                "${if (targetId == 0) "INSERT" else "UPDATE"} target=$targetId " +
+                    "callerId=$id noteId=${noteId.value} createdRowId=$createdRowId " +
+                    "nameLen=${snapshot.name.length} descLen=${snapshot.description.length} " +
+                    "vm=${System.identityHashCode(this@EditViewModel)}"
+            )
+        }
+
         // Encryption goes through the secure element and StrongBox is slow, so keep it off
         // the main thread. NonCancellable: a save started as the editor is torn down must
         // finish, or the note is silently lost.
@@ -217,12 +233,23 @@ class EditViewModel @Inject constructor(
         autoSaveJob?.cancel()
         autoSaveJob = viewModelScope.launch {
             delay(AUTOSAVE_DEBOUNCE_MS)
+            // Autosave updates a row that already exists; it never creates one.
+            //
+            // Creating on a debounce timer is what produced the duplicate: type a title,
+            // pause for 750ms before starting the body, and a title-only row was written
+            // then and there. Up to 2.2.0 a new note was written exactly once, when the
+            // editor was left, and that is the behaviour restored here. An explicit Save or
+            // ON_PAUSE still creates the row, so nothing is lost by waiting.
+            if (noteId.value == 0 && createdRowId == null) return@launch
             persist(noteId.value)
         }
     }
 
     private companion object {
         const val AUTOSAVE_DEBOUNCE_MS = 750L
+
+        /** logcat tag for the debug-only write trace in [persist]. */
+        const val SAVE_TAG = "NotesSave"
     }
 
     fun deleteNote(id: Int) {
