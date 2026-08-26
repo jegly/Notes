@@ -68,44 +68,82 @@ fun CustomTextField(
     )
 }
 
+/**
+ * Undo/redo history for a single text field.
+ *
+ * Every entry holds a complete copy of the field's text, so the history is bounded by both
+ * a depth limit and a total-character budget. It used to be unbounded: each keystroke
+ * pushed another full copy of the note and nothing was ever dropped, so editing a large
+ * note grew the heap by the note's size per character typed until the process was killed.
+ *
+ * When a note is large enough that even a couple of snapshots blow the budget, the history
+ * collapses to the current state and undo becomes a no-op. Losing undo depth on a huge note
+ * is the intended trade.
+ */
 class UndoRedoState {
     var input by mutableStateOf(TextFieldValue(""))
+
     private val undoHistory = ArrayDeque<TextFieldValue>()
     private val redoHistory = ArrayDeque<TextFieldValue>()
+    private var undoChars = 0L
+    private var redoChars = 0L
 
     init {
-        undoHistory.add(input)
+        undoHistory.addLast(input)
     }
 
     fun onInput(value: TextFieldValue) {
+        // Caret moves and focus changes are not edits. Recording them wasted a full copy of
+        // the text per event and made undo appear to do nothing.
+        if (value.text == input.text) return
+
         // always set the cursor at the end (selection = text length)
         val updatedValue = value.copy(value.text, selection = TextRange(value.text.length))
-        undoHistory.add(updatedValue)
+        undoHistory.addLast(updatedValue)
+        undoChars = trim(undoHistory, undoChars + updatedValue.text.length, keepAtLeast = 1)
+
         redoHistory.clear()  // Clear redo history on new input
+        redoChars = 0L
+
         input = updatedValue
     }
 
     fun undo() {
-        if (undoHistory.size > 1) {
-            // Pop the last
-            val lastState = undoHistory.removeLastOrNull()
-            lastState?.let {
-                redoHistory.add(it)
-            }
-
-            // Peek the last
-            val previousState = undoHistory.lastOrNull()
-            previousState?.let {
-                input = it
-            }
-        }
+        if (undoHistory.size <= 1) return
+        val lastState = undoHistory.removeLast()
+        undoChars -= lastState.text.length
+        redoHistory.addLast(lastState)
+        redoChars = trim(redoHistory, redoChars + lastState.text.length, keepAtLeast = 0)
+        input = undoHistory.last()
     }
 
     fun redo() {
-        val redoState = redoHistory.removeLastOrNull()
-        redoState?.let {
-            undoHistory.add(it)
-            input = it
+        val redoState = redoHistory.removeLastOrNull() ?: return
+        redoChars -= redoState.text.length
+        undoHistory.addLast(redoState)
+        undoChars = trim(undoHistory, undoChars + redoState.text.length, keepAtLeast = 1)
+        input = redoState
+    }
+
+    /**
+     * Drops the oldest entries until [history] fits both budgets. Takes the prospective
+     * character total and returns the actual one.
+     */
+    private fun trim(history: ArrayDeque<TextFieldValue>, chars: Long, keepAtLeast: Int): Long {
+        var total = chars
+        while (history.size > keepAtLeast &&
+            (history.size > MAX_HISTORY_DEPTH || total > MAX_HISTORY_CHARS)
+        ) {
+            total -= history.removeFirst().text.length
         }
+        return total
+    }
+
+    private companion object {
+        /** Maximum snapshots retained per field. */
+        const val MAX_HISTORY_DEPTH = 50
+
+        /** Upper bound on text retained across a history, in characters (~2 MB of UTF-16). */
+        const val MAX_HISTORY_CHARS = 1_000_000L
     }
 }

@@ -72,15 +72,30 @@ fun isInSegments(index: Int, segments: List<Pair<Int, Int>>): Boolean {
     return segments.any { segment -> index in segment.first until segment.second }
 }
 
+private val textStyleSegments: List<TextStyleSegment> = listOf(
+    BoldSegment(),
+    ItalicSegment(),
+    HighlightSegment(),
+    Strikethrough(),
+    Underline(),
+    CodeSegment()
+)
+
+/**
+ * Characters that can begin an inline style delimiter. Conservative: '=' only matters as
+ * "==", but a line containing one is cheap enough to send down the slow path.
+ */
+private val delimiterChars = charArrayOf('*', '=', '~', '_', '`')
+
 fun buildString(input: String, defaultFontWeight: FontWeight = FontWeight.Normal): AnnotatedString {
-    val textStyleSegments: List<TextStyleSegment> = listOf(
-        BoldSegment(),
-        ItalicSegment(),
-        HighlightSegment(),
-        Strikethrough(),
-        Underline(),
-        CodeSegment()
-    )
+    // Fast path for lines with no inline styling — the large majority. The general path
+    // below allocates an ICU BreakIterator per line and, for every word, linearly scans all
+    // delimiter segments, which makes it quadratic in line length.
+    if (input.none { it in delimiterChars }) {
+        return buildAnnotatedString {
+            withStyle(SpanStyle(fontWeight = defaultFontWeight)) { append(input) }
+        }
+    }
 
     val allSegments = textStyleSegments.associateWith { splitByDelimiter(input, it.delimiter) }
 

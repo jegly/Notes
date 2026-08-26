@@ -12,10 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class NoteUseCase @Inject constructor(
@@ -31,6 +33,23 @@ class NoteUseCase @Inject constructor(
 
     private var observeJob: Job? = null
 
+    /**
+     * Decrypted content, keyed by note id.
+     *
+     * Room re-emits the whole table on every write, so without this, saving one note
+     * re-decrypts every other note — and each decryption is a full pass of the note body
+     * through the secure element. With a large note in the database that made every write
+     * anywhere in the app (including creating a brand new note) block on decrypting it.
+     *
+     * Ciphertext is randomized per encryption, so an unchanged ciphertext string is a
+     * reliable "this note has not been rewritten" signal.
+     *
+     * Holds plaintext, so [zeroize] must clear it — which it can do from the main thread
+     * while a decryption pass is still iterating, hence the concurrent map.
+     */
+    private class CacheEntry(val cipherName: String, val cipherDesc: String, val note: Note)
+    private val decryptCache = ConcurrentHashMap<Int, CacheEntry>()
+
     fun observe() {
         observeJob?.cancel()
         observeJob = coroutineScope.launch {
@@ -43,18 +62,41 @@ class NoteUseCase @Inject constructor(
                 }
 
                 var worstResult: DecryptionResult = DecryptionResult.SUCCESS
-                val processed = rawNotes.mapNotNull { note ->
-                    if (note.encrypted) {
+
+                // Decryption cost scales with note size and runs through the Keystore, so it
+                // must never happen on the main thread — this scope is Main-dispatched.
+                val processed = withContext(Dispatchers.Default) {
+                    val result = rawNotes.mapNotNull { note ->
+                        ensureActive()
+                        if (!note.encrypted) {
+                            // Plain note — shouldn't exist after setup but handle gracefully
+                            return@mapNotNull note
+                        }
+                        val cached = decryptCache[note.id]
+                        if (cached != null &&
+                            cached.cipherName == note.name &&
+                            cached.cipherDesc == note.description
+                        ) {
+                            // Unchanged ciphertext — reuse the plaintext, but take metadata
+                            // from the fresh row.
+                            return@mapNotNull cached.note.copy(
+                                pinned = note.pinned,
+                                createdAt = note.createdAt
+                            )
+                        }
                         val (decryptedNote, status) = decryptNote(note)
                         // Track worst result across all notes — don't let last note win
                         if (status != DecryptionResult.SUCCESS) {
                             worstResult = status
+                            decryptCache.remove(note.id)
+                            return@mapNotNull null
                         }
-                        if (status == DecryptionResult.SUCCESS) decryptedNote else null
-                    } else {
-                        // Plain note — shouldn't exist after setup but handle gracefully
-                        note
+                        decryptCache[note.id] = CacheEntry(note.name, note.description, decryptedNote)
+                        decryptedNote
                     }
+                    // Drop cache entries for notes that no longer exist.
+                    decryptCache.keys.retainAll(rawNotes.mapTo(HashSet()) { it.id })
+                    result
                 }
 
                 decryptionResult = if (rawNotes.isEmpty()) DecryptionResult.EMPTY else worstResult
@@ -140,6 +182,9 @@ class NoteUseCase @Inject constructor(
         observeJob?.cancel()
         observeJob = null
         notes = emptyList()
+        // The decryption cache holds plaintext — it has to go too, or locking the app
+        // would leave every note readable in memory.
+        decryptCache.clear()
         decryptionResult = DecryptionResult.LOADING
     }
 

@@ -36,8 +36,24 @@ That key never leaves the device, so it cannot move to a new phone with you. If 
 - Encrypted backup — a passphrase-protected export (Argon2id + AES-256-GCM) that *is*
   restorable on another device, deliberately independent of the device-bound note key
 - Export / Import plain text
-- Autosave — notes are written as you type, not only when the editor closes
+- Autosave — notes are written as you type, not only when the editor closes, and skipped
+  entirely when nothing has actually changed
   
+
+---
+
+## Large notes
+
+A note's title and body are each encrypted and decrypted as a single unit through the
+secure element, so the cost scales with how much text the note holds. As of 2.3.1 that work
+runs off the main thread, decrypted content is cached against its stored ciphertext so an
+unrelated save no longer re-decrypts every other note, and undo history is bounded by both
+depth and total size. A very large note still takes a moment to save; it no longer freezes
+the app or grows the heap without limit.
+
+One hard ceiling remains. Android caps a single database row at 2 MB, and Base64 inflates
+stored ciphertext by roughly 1.37×, so a note beyond roughly 1.4 MB of text — on the order
+of 30,000 lines — will fail to load. Split notes that approach that size.
 
 ---
 

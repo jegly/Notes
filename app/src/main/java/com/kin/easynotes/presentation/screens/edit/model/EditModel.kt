@@ -54,7 +54,11 @@ class EditViewModel @Inject constructor(
     private val _isPinned = mutableStateOf(false)
     val isPinned: State<Boolean> get() = _isPinned
 
-    private val undoRedoState = UndoRedoState()
+    // One history per field. These used to share a single UndoRedoState, so typing in the
+    // title pushed the title text onto the same stack undo() reads from — and undo would
+    // then overwrite the note body with the title.
+    private val nameUndoRedoState = UndoRedoState()
+    private val descriptionUndoRedoState = UndoRedoState()
     private var isDeleted = false
 
     /**
@@ -99,6 +103,34 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Fingerprint of the last content successfully written, so an autosave tick that finds
+     * nothing changed can skip the write entirely.
+     *
+     * Encryption cost scales with note length, and every write also makes Room re-emit the
+     * whole table, so a redundant save of a large note is expensive twice over. Stored as
+     * hashes and lengths rather than the strings themselves to avoid retaining a second
+     * copy of the note in memory.
+     */
+    private data class SavedSignature(
+        val id: Int,
+        val nameHash: Int,
+        val nameLength: Int,
+        val descriptionHash: Int,
+        val descriptionLength: Int,
+        val pinned: Boolean,
+    )
+
+    private var lastSaved: SavedSignature? = null
+
+    /** Result of decrypting both fields of a note off the main thread. */
+    private data class DecryptedNote(
+        val name: String?,
+        val nameStatus: DecryptionResult,
+        val description: String?,
+        val descriptionStatus: DecryptionResult,
+    )
+
     private suspend fun persist(id: Int) = saveMutex.withLock {
         // Snapshot the editor state on the caller's thread (main) before handing off.
         val snapshot = Note(
@@ -109,6 +141,17 @@ class EditViewModel @Inject constructor(
             encrypted = true, // always encrypted
             createdAt = if (noteCreatedTime.value != 0L) noteCreatedTime.value else System.currentTimeMillis(),
         )
+        val signature = SavedSignature(
+            id = snapshot.id,
+            nameHash = snapshot.name.hashCode(),
+            nameLength = snapshot.name.length,
+            descriptionHash = snapshot.description.hashCode(),
+            descriptionLength = snapshot.description.length,
+            pinned = snapshot.pinned,
+        )
+        // Nothing changed since the last successful write — don't pay for it again.
+        if (signature == lastSaved) return@withLock
+
         // Encryption goes through the secure element and StrongBox is slow, so keep it off
         // the main thread. NonCancellable: a save started as the editor is torn down must
         // finish, or the note is silently lost.
@@ -121,9 +164,14 @@ class EditViewModel @Inject constructor(
                     // Adopt the generated row id so subsequent saves update rather than
                     // insert a duplicate.
                     if (noteId.value == 0) updateNoteId(savedId)
+                    lastSaved = signature.copy(id = savedId)
                     _saveError.value = null
                 },
-                onFailure = { error -> _saveError.value = error.message ?: "Could not save note" }
+                onFailure = { error ->
+                    // Leave the fingerprint alone so the next tick retries this content.
+                    lastSaved = null
+                    _saveError.value = error.message ?: "Could not save note"
+                }
             )
         }
     }
@@ -161,6 +209,15 @@ class EditViewModel @Inject constructor(
         updateNoteCreatedTime(note.createdAt)
         updateNoteId(note.id)
         updateNotePin(note.pinned)
+        // Loading is not an edit — see the equivalent note in setupNoteData.
+        lastSaved = SavedSignature(
+            id = note.id,
+            nameHash = note.name.hashCode(),
+            nameLength = note.name.length,
+            descriptionHash = note.description.hashCode(),
+            descriptionLength = note.description.length,
+            pinned = note.pinned,
+        )
     }
 
     // Guards against re-loading. This used to collect the note Flow continuously, so every
@@ -175,11 +232,27 @@ class EditViewModel @Inject constructor(
             val note = runCatching { noteUseCase.getNoteById(id).first() }.getOrNull() ?: return@launch
             // Note from DB is still raw ciphertext — decrypt for display
             if (note.encrypted) {
-                val (name, nameStatus) = encryption.decrypt(note.name)
-                val (description, descStatus) = encryption.decrypt(note.description)
+                // viewModelScope is main-dispatched and decryption cost scales with note
+                // size, so opening a large note here froze the UI for as long as the
+                // secure element took to run through the whole body.
+                val (name, nameStatus, description, descStatus) = withContext(Dispatchers.Default) {
+                    val (n, nStatus) = encryption.decrypt(note.name)
+                    val (d, dStatus) = encryption.decrypt(note.description)
+                    DecryptedNote(n, nStatus, d, dStatus)
+                }
                 if (nameStatus == DecryptionResult.SUCCESS && descStatus == DecryptionResult.SUCCESS) {
                     updateNoteName(TextFieldValue(name!!, selection = TextRange(name.length)))
                     updateNoteDescription(TextFieldValue(description!!, selection = TextRange(description.length)))
+                    // Opening a note is not an edit. Without this, backing straight out of a
+                    // note re-encrypted and rewrote it unchanged.
+                    lastSaved = SavedSignature(
+                        id = note.id,
+                        nameHash = name.hashCode(),
+                        nameLength = name.length,
+                        descriptionHash = description.hashCode(),
+                        descriptionLength = description.length,
+                        pinned = note.pinned,
+                    )
                 } else {
                     // Could not decrypt — surface it instead of silently showing an empty
                     // editor that would overwrite the real note on the next save.
@@ -204,13 +277,13 @@ class EditViewModel @Inject constructor(
 
     fun updateNoteName(newName: TextFieldValue) {
         _noteName.value = newName
-        undoRedoState.onInput(newName)
+        nameUndoRedoState.onInput(newName)
         scheduleAutoSave()
     }
 
     fun updateNoteDescription(newDescription: TextFieldValue) {
         _noteDescription.value = newDescription
-        undoRedoState.onInput(newDescription)
+        descriptionUndoRedoState.onInput(newDescription)
         scheduleAutoSave()
     }
 
@@ -218,8 +291,10 @@ class EditViewModel @Inject constructor(
     private fun updateNotePin(pinned: Boolean) { _isPinned.value = pinned }
     fun updateNoteId(newId: Int) { _noteId.intValue = newId }
 
-    fun undo() { undoRedoState.undo(); _noteDescription.value = undoRedoState.input }
-    fun redo() { undoRedoState.redo(); _noteDescription.value = undoRedoState.input }
+    // The undo/redo affordances are only shown while the description has focus, so both
+    // act on the description history.
+    fun undo() { descriptionUndoRedoState.undo(); _noteDescription.value = descriptionUndoRedoState.input }
+    fun redo() { descriptionUndoRedoState.redo(); _noteDescription.value = descriptionUndoRedoState.input }
 
     private fun isSelectorAtStartOfNonEmptyLine(): Boolean {
         val text = _noteDescription.value.text

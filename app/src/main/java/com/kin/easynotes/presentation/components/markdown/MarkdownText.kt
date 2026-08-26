@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -131,24 +132,25 @@ fun MarkdownText(
         return
     }
 
-    val lines = markdown.lines()
-    val lineProcessors = listOf(
-        HeadingProcessor(),
-        ListItemProcessor(),
-        CodeBlockProcessor(),
-        QuoteProcessor(),
-        ImageInsertionProcessor(),
-        CheckboxProcessor(),
-        LinkProcessor(),
-        HorizontalRuleProcessor()
-    )
-    val markdownBuilder = MarkdownBuilder(lines, lineProcessors)
-    markdownBuilder.parse()
+    // A preview renders at most PREVIEW_ELEMENT_LIMIT elements, so there is no reason to
+    // read past the handful of lines that can produce them. This path is the note list,
+    // which previously parsed every line of every note — the whole of a 10,000-line note
+    // included — to display four of them.
+    val lines = remember(markdown, isPreview) {
+        if (isPreview) markdown.lineSequence().take(PREVIEW_LINE_LIMIT).toList()
+        else markdown.lines()
+    }
+
+    // Parsing allocates an element per line and was previously re-run on every single
+    // recomposition, including on every keystroke while editing.
+    val content = remember(lines) {
+        MarkdownBuilder(lines, markdownLineProcessors).apply { parse() }.content
+    }
 
     MarkdownContent(
         radius = radius,
         isPreview = isPreview,
-        content = markdownBuilder.content,
+        content = content,
         modifier = modifier,
         spacing = spacing,
         weight = weight,
@@ -157,6 +159,30 @@ fun MarkdownText(
         onContentChange = onContentChange
     )
 }
+
+/**
+ * Stateless and shared. Built once rather than per call — [LinkProcessor] in particular
+ * compiles a Regex in its constructor.
+ */
+private val markdownLineProcessors: List<MarkdownLineProcessor> = listOf(
+    HeadingProcessor(),
+    ListItemProcessor(),
+    CodeBlockProcessor(),
+    QuoteProcessor(),
+    ImageInsertionProcessor(),
+    CheckboxProcessor(),
+    LinkProcessor(),
+    HorizontalRuleProcessor()
+)
+
+/** Elements a preview card renders. */
+private const val PREVIEW_ELEMENT_LIMIT = 4
+
+/**
+ * Lines a preview reads before giving up. Comfortably above [PREVIEW_ELEMENT_LIMIT], since
+ * a processor may consume several lines to produce one element.
+ */
+private const val PREVIEW_LINE_LIMIT = 24
 
 @Composable
 fun StaticMarkdownText(
@@ -187,7 +213,7 @@ fun MarkdownContent(
 ) {
     if (isPreview) {
         Column(modifier = modifier) {
-             content.take(4).forEachIndexed { index, _ ->
+             content.take(PREVIEW_ELEMENT_LIMIT).forEachIndexed { index, _ ->
                     RenderMarkdownElement(
                         radius = radius,
                         index = index,
