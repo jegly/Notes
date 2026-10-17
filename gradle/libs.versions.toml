@@ -8,7 +8,7 @@ lifecycleRuntimeCompose = "2.11.0"
 hilt = "2.60.1"
 hiltCompiler = "1.4.0"
 hiltAndroidCompiler = "2.60.1"
-coilCompose = "3.5.0"
+coilCompose = "3.6.3"
 hiltNavigationCompose = "1.4.0"
 kotlin = "2.4.21"
 # KSP's version no longer tracks the Kotlin version — 2.3.0 was numbered to sort above
