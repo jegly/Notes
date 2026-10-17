@@ -16,14 +16,14 @@ kotlin = "2.4.10"
 # Kotlin 2.4.0 fixes.
 ksp = "2.3.11"
 m3color = "2026.1"
-room = "2.8.4"                     # latest release
+room = "2.8.5"                     # latest release
 activityCompose = "1.13.0"         # latest release
-coreKtx = "1.19.0"
+coreKtx = "1.19.1"
 coreSplashscreen = "1.2.0"
 # material-icons-extended is frozen upstream; 1.7.8 is its final release.
 compose = "1.7.8"
 material3 = "1.4.0"                # latest stable (1.5.0 is alpha only)
-navigationCompose = "2.9.8"        # latest stable (2.10.0 is rc only)
+navigationCompose = "2.10.2"        # latest stable (2.10.0 is rc only)
 appcompat = "1.8.0"
 
 [libraries]
