@@ -10,11 +10,11 @@ hiltCompiler = "1.4.0"
 hiltAndroidCompiler = "2.60.1"
 coilCompose = "3.5.0"
 hiltNavigationCompose = "1.4.0"
-kotlin = "2.4.10"
+kotlin = "2.4.21"
 # KSP's version no longer tracks the Kotlin version — 2.3.0 was numbered to sort above
 # 2.2.20-2.0.4 for Gradle's benefit. 2.3.11 supports Kotlin 2.2+ and carries explicit
 # Kotlin 2.4.0 fixes.
-ksp = "2.3.11"
+ksp = "2.3.12"
 m3color = "2026.1"
 room = "2.8.4"                     # latest release
 activityCompose = "1.13.0"         # latest release
