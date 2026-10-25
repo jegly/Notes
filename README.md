@@ -86,6 +86,27 @@ of 30,000 lines — will fail to load. Split notes that approach that size.
 
 
 
+## Release signing
+
+Release APKs use hybrid signing (APK Signature Scheme v3.2): the original app key plus an EC P-384 key and an ML-DSA-87 post-quantum key. Android 17 and newer verify the hybrid block, where the ML-DSA-87 key is the signer; earlier Android versions verify the original key as before.
+
+| File | SHA-256 |
+| --- | --- |
+| `Notes-2.3.3-PQC-signed.apk` | `a366cf167a787f10d2e4f870d5e11d2e9aa0a0636b8f8fb76098098ddc487c70` |
+
+Verify a download:
+
+```bash
+sha256sum Notes-2.3.3-PQC-signed.apk
+apksigner verify -v --print-certs Notes-2.3.3-PQC-signed.apk   # build-tools 37.0.0 on JDK 25 shows all three keys
+```
+
+Signing certificate SHA-256:
+
+- ML-DSA-87 (post-quantum): `5f99de5b3195753d4fe8ddabebd2fb27356b2109d6fbb2471fcbbdf21a9e76a6`
+- EC P-384 (hybrid classical): `fa8f4a07e6a4f2b7dc6e5ab31fc05592b1414ab9436d1e2e39b35ce3bb2e33a2`
+- Original key: `98d324d4106a368c62729a0a24d9ac9a6b47f8ac4c6585348531f0ee4eb6a04c`
+
 ## Upstream
 
 Fork of [EasyNotes by Kin69](https://github.com/Kin69/EasyNotes). Changes are intentionally not upstreamed — the threat model diverges too far from the original project's goals.
