@@ -3,7 +3,7 @@ agp = "9.4.1"
 argon2kt = "1.6.0"                 # latest release
 # No stable line has ever shipped for biometric-ktx; 1.4.0-alpha02 is the newest available.
 biometricKtx = "1.4.0-alpha02"
-datastorePreferences = "1.2.1"     # latest stable (1.3.0 is alpha only)
+datastorePreferences = "1.3.0"     # latest stable (1.3.0 is alpha only)
 lifecycleRuntimeCompose = "2.11.0"
 hilt = "2.60.1"
 hiltCompiler = "1.4.0"
