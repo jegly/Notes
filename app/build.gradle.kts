@@ -17,8 +17,8 @@ android {
         applicationId = "com.notes.app"
         minSdk = 33
         targetSdk = 37
-        versionCode = 25
-        versionName = "2.3.1"
+        versionCode=26
+        versionName="2.3.2"
         vectorDrawables {
             useSupportLibrary = true
         }
