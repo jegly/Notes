@@ -1,5 +1,5 @@
 [versions]
-agp = "9.4.1"
+agp = "9.5.0"
 argon2kt = "1.6.0"                 # latest release
 # No stable line has ever shipped for biometric-ktx; 1.4.0-alpha02 is the newest available.
 biometricKtx = "1.4.0-alpha02"
