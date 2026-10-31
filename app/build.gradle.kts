@@ -17,8 +17,9 @@ android {
         applicationId = "com.notes.app"
         minSdk = 33
         targetSdk = 37
-        versionCode=27
-        versionName="2.3.3"
+        // CI release builds pass these; local builds use the defaults.
+        versionCode = providers.gradleProperty("appVersionCode").map(String::toInt).getOrElse(27)
+        versionName = providers.gradleProperty("appVersionName").getOrElse("2.3.3")
         vectorDrawables {
             useSupportLibrary = true
         }
