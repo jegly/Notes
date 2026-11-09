@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.login
 
+import com.kin.easynotes.presentation.theme.komiShadow
+import com.kin.easynotes.presentation.theme.komiBorder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.biometric.BiometricManager
@@ -147,6 +149,7 @@ fun LoginScreen(
             text = stringResource(id = R.string.app_name),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            fontFamily = if (com.kin.easynotes.presentation.theme.KomiState.active) com.kin.easynotes.presentation.theme.pressStart2pFamily else null,
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -190,6 +193,7 @@ fun LoginScreen(
             onClick = { attempt() },
             enabled = !isLockedOut,
             modifier = Modifier.fillMaxWidth().height(52.dp)
+                .komiShadow().komiBorder()
         ) {
             Text(stringResource(id = R.string.enter_password))
         }

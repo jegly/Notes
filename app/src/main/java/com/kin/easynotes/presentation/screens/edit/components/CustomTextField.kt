@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.edit.components
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,7 +30,7 @@ fun CustomTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     placeholder: String,
-    shape: RoundedCornerShape = RoundedCornerShape(0.dp),
+    shape: RoundedCornerShape = komiShape(RoundedCornerShape(0.dp)),
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
     singleLine: Boolean = false,
     modifier: Modifier = Modifier,

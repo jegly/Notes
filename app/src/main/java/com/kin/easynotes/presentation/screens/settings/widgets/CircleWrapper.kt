@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.settings.widgets
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -21,7 +23,7 @@ fun CircleWrapper(
         modifier = Modifier
             .background(
                 color = color,
-                shape = RoundedCornerShape(50)
+                shape = komiShape(RoundedCornerShape(50))
             )
             .padding(size),
     ) {

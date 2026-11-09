@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.settings.settings
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -82,6 +84,7 @@ fun shapeManager(isBoth: Boolean = false,isLast: Boolean = false,isFirst: Boolea
     val smallerRadius: Dp = (radius/5).dp
     val defaultRadius: Dp = radius.dp
 
+    if (com.kin.easynotes.presentation.theme.KomiState.active) return RoundedCornerShape(0.dp)
     return when {
         isBoth -> RoundedCornerShape(defaultRadius)
         isLast -> RoundedCornerShape(smallerRadius,smallerRadius,defaultRadius,defaultRadius)
@@ -300,7 +303,7 @@ fun OnFontFamilyClicked(settingsViewModel: SettingsViewModel, onExit: (String) -
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 3)
+                    shape = komiShape(RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 3))
                 )
                 .fillMaxWidth()
                 .fillMaxSize(0.7f)
@@ -376,7 +379,7 @@ fun OnRadiusClicked( settingsViewModel: SettingsViewModel,onExit: (Int) -> Unit)
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(realRadius / 3)
+                    shape = komiShape(RoundedCornerShape(realRadius / 3))
                 )
                 .fillMaxWidth()
                 .fillMaxSize(0.38f)
@@ -415,7 +418,7 @@ fun OnFontSizeClicked(settingsViewModel: SettingsViewModel, onExit: (Int) -> Uni
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 3)
+                    shape = komiShape(RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 3))
                 )
                 .fillMaxWidth()
                 .fillMaxSize(0.5f)
@@ -443,7 +446,7 @@ fun OnFontSizeClicked(settingsViewModel: SettingsViewModel, onExit: (Int) -> Uni
                     .padding(16.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        shape = RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 2)
+                        shape = komiShape(RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 2))
                     )
                     .padding(16.dp)
             ) {
@@ -482,7 +485,7 @@ fun OnFontSizeClicked(settingsViewModel: SettingsViewModel, onExit: (Int) -> Uni
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 2)
+                            shape = komiShape(RoundedCornerShape(settingsViewModel.settings.value.cornerRadius / 2))
                         )
                         .clickable { onExit(selectedFontSize) }
                         .padding(horizontal = 24.dp, vertical = 12.dp)
@@ -523,6 +526,7 @@ fun ThemeModeSection(settingsViewModel: SettingsViewModel) {
 
             val options = listOf(
                 "system"     to stringResource(id = R.string.theme_mode_system),
+                "komi"       to stringResource(id = R.string.theme_mode_komi),
                 "catppuccin" to stringResource(id = R.string.theme_mode_catppuccin),
                 "dracula"    to stringResource(id = R.string.theme_mode_dracula),
                 "ptyxis"     to stringResource(id = R.string.theme_mode_ptyxis),
@@ -731,7 +735,7 @@ fun ColorSelectionDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(komiShape(RoundedCornerShape(12.dp)))
                         .background(
                             if (isUsingSystemColors)
                                 MaterialTheme.colorScheme.primaryContainer

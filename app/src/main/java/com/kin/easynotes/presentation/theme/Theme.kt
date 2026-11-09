@@ -92,6 +92,7 @@ fun NotesTheme(
     val themeMode = settingsModel.settings.value.themeMode
     val isDarkUi = when (themeMode) {
         "catppuccin", "dracula", "ptyxis", "ptyxis_ext" -> true
+        THEME_MODE_KOMI -> settingsModel.settings.value.darkTheme
         else -> settingsModel.settings.value.darkTheme
     }
 
@@ -99,21 +100,25 @@ fun NotesTheme(
         isAppearanceLightStatusBars = !isDarkUi
     }
 
+    KomiState.active = themeMode == THEME_MODE_KOMI
     val keyColor = Color(settingsModel.settings.value.customColor)
     val useSystemDynamic = settingsModel.settings.value.customColor == -7896468 // Use system colors if user hasn't picked custom color
     val colorScheme = when (themeMode) {
+        THEME_MODE_KOMI -> komiColorScheme(settingsModel.settings.value.darkTheme)
         "catppuccin" -> catppuccinColorScheme(settingsModel.settings.value.catppuccinAccent)
         "dracula"    -> draculaColorScheme(settingsModel.settings.value.draculaAccent)
         "ptyxis"     -> buildPtyxisColorScheme(ptyxisPaletteFromKey(settingsModel.settings.value.ptyxisPalette))
         "ptyxis_ext" -> buildPtyxisExtendedColorScheme(ptyxisPaletteExtendedFromKey(settingsModel.settings.value.ptyxisExtendedPalette))
         else         -> getColorScheme(context, settingsModel.settings.value.darkTheme, settingsModel.settings.value.dynamicTheme, settingsModel.settings.value.amoledTheme, keyColor, useSystemDynamic)
     }
-    val typography = remember(settingsModel.settings.value.appFont) {
-        buildAppTypography(appFontFromKey(settingsModel.settings.value.appFont).family)
+    val isKomi = themeMode == THEME_MODE_KOMI
+    val typography = remember(settingsModel.settings.value.appFont, isKomi) {
+        if (isKomi) komiTypography() else buildAppTypography(appFontFromKey(settingsModel.settings.value.appFont).family)
     }
     MaterialTheme(
         colorScheme = colorScheme,
         typography = typography,
+        shapes = if (isKomi) KomiShapes else MaterialTheme.shapes,
         content = content
     )
 }

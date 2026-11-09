@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.components
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -20,7 +22,7 @@ fun NotesButton(
 ) {
     ExtendedFloatingActionButton(
         modifier = Modifier,
-        shape = RoundedCornerShape(24.dp),
+        shape = komiShape(RoundedCornerShape(24.dp)),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
         onClick = { onClick() },
@@ -37,7 +39,7 @@ fun AgreeButton(
 ) {
     ExtendedFloatingActionButton(
         modifier = Modifier,
-        shape = RoundedCornerShape(24.dp),
+        shape = komiShape(RoundedCornerShape(24.dp)),
         onClick = { onClick() },
         icon = { Icon(Icons.Rounded.CheckCircle, text) },
         text = { Text(text = text) },

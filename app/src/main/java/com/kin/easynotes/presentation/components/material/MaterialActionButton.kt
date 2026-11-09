@@ -17,6 +17,8 @@
 
 package com.kin.easynotes.presentation.components.material
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.imePadding
@@ -42,7 +44,7 @@ fun MaterialActionButton(
     ExtendedFloatingActionButton(
         modifier = modifier
             .imePadding(),
-        shape = RoundedCornerShape(24.dp),
+        shape = komiShape(RoundedCornerShape(24.dp)),
         onClick = { onClick() },
         content = {
             Row(

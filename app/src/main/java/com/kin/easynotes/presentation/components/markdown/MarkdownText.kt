@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.components.markdown
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 
 import android.text.SpannableString
 import android.widget.TextView
@@ -62,7 +64,7 @@ fun MarkdownCodeBlock(
             Surface(
                 color = color,
                 modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(komiShape(RoundedCornerShape(6.dp)))
                     .fillMaxWidth(),
                 content = {
                     text()
@@ -81,7 +83,7 @@ fun MarkdownQuote(content: String, fontSize: TextUnit) {
                 .width(6.dp)
                 .background(
                     MaterialTheme.colorScheme.surfaceContainerLow,
-                    RoundedCornerShape(16.dp)
+                    komiShape(RoundedCornerShape(16.dp))
                 )
         )
         Spacer(modifier = Modifier.width(6.dp))

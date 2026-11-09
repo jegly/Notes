@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.home.widgets
 
+import com.kin.easynotes.presentation.theme.komiShadow
+import com.kin.easynotes.presentation.theme.komiBorder
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,6 +55,7 @@ fun NoteCard(
     Box(
         modifier = Modifier
             .padding(bottom = 12.dp)
+            .komiShadow()
             .clip(shape)
             .background(containerColor)
             .combinedClickable(
@@ -60,6 +63,7 @@ fun NoteCard(
                 onLongClick = { onLongClick() }
             )
             .then(borderModifier)
+            .komiBorder()
     ) {
         Column(
             modifier = Modifier.padding(16.dp, 12.dp, 16.dp, 12.dp)

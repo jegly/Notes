@@ -17,6 +17,8 @@
 
 package com.kin.easynotes.presentation.screens.settings.widgets
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -64,7 +66,7 @@ fun SupportBox(
                     start = Offset(0f, 0f),
                     end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
                 ),
-                shape = RoundedCornerShape(30.dp)
+                shape = komiShape(RoundedCornerShape(30.dp))
             )
             .padding(
                 horizontal = dimensionResource(id = R.dimen.card_padding_horizontal),

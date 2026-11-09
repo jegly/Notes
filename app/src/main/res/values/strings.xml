@@ -7,6 +7,7 @@
     <string name="theme_style">Theme Style</string>
     <string name="theme_style_description">Use the system colors below or pick a preset palette</string>
     <string name="theme_mode_system">System</string>
+    <string name="theme_mode_komi">KOMI</string>
     <string name="theme_mode_catppuccin">Catppuccin</string>
     <string name="theme_mode_dracula">Dracula</string>
     <string name="theme_mode_ptyxis">Ptyxis</string>

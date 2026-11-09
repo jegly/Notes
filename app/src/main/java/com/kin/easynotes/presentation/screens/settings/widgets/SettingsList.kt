@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.settings.widgets
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +47,7 @@ fun <T> ListDialog(
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(32.dp)
+                    shape = komiShape(RoundedCornerShape(32.dp))
                 )
                 .padding(12.dp, 0.dp, 12.dp, 0.dp)
                 .fillMaxWidth(0.8f)
@@ -62,7 +64,7 @@ fun <T> ListDialog(
             LazyColumn(
                 modifier = Modifier
                     .padding(bottom = 12.dp)
-                    .clip(RoundedCornerShape(32.dp))
+                    .clip(komiShape(RoundedCornerShape(32.dp)))
                     .heightIn(max = 600.dp)
             ) {
                 initialItem?.let { initial ->
@@ -94,7 +96,7 @@ fun CustomListDialog(
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    shape = RoundedCornerShape(32.dp)
+                    shape = komiShape(RoundedCornerShape(32.dp))
                 )
                 .padding(12.dp, 0.dp, 12.dp, 0.dp)
                 .fillMaxWidth(0.8f)
@@ -111,7 +113,7 @@ fun CustomListDialog(
             LazyColumn(
                 modifier = Modifier
                     .padding(bottom = 12.dp)
-                    .clip(RoundedCornerShape(32.dp))
+                    .clip(komiShape(RoundedCornerShape(32.dp)))
                     .heightIn(max = 600.dp)
             ) {
                 content()

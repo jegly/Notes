@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.settings.widgets
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,7 +38,7 @@ fun SettingSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(6.dp))
+            .clip(komiShape(RoundedCornerShape(6.dp)))
             .clickable { section.onClick() }
             .background(color = MaterialTheme.colorScheme.surfaceContainer)
             .padding(horizontal = 24.dp, vertical = 16.dp),
@@ -59,7 +61,7 @@ fun SettingSection(
 @Composable
 fun SectionBlock(
     sections: List<SettingSection>,
-    shape: RoundedCornerShape = RoundedCornerShape(32.dp)
+    shape: RoundedCornerShape = komiShape(RoundedCornerShape(32.dp))
 ) {
     Box(
         modifier = Modifier.fillMaxSize()

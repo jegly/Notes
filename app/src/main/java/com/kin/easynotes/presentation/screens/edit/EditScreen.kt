@@ -1,5 +1,7 @@
 package com.kin.easynotes.presentation.screens.edit
 
+import com.kin.easynotes.presentation.theme.komiShape
+
 import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -465,7 +467,7 @@ fun PreviewScreen(viewModel: EditViewModel, settingsViewModel: SettingsViewModel
 fun MarkdownBox(
     isExtremeAmoled: Boolean,
     modifier: Modifier = Modifier,
-    shape: RoundedCornerShape = RoundedCornerShape(0.dp),
+    shape: RoundedCornerShape = komiShape(RoundedCornerShape(0.dp)),
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -536,7 +538,7 @@ private fun RenderButton(
     isExtremeAmoled: Boolean
 ) {
     CustomIconButton(
-        shape = if (isMinimalistic) RoundedCornerShape(100) else if (pageIndex == 0) RoundedCornerShape(topStart = 32.dp, bottomStart = 32.dp) else RoundedCornerShape(bottomEnd = 32.dp, topEnd = 32.dp),
+        shape = if (isMinimalistic) komiShape(RoundedCornerShape(100)) else if (pageIndex == 0) komiShape(RoundedCornerShape(topStart = 32.dp, bottomStart = 32.dp)) else komiShape(RoundedCornerShape(bottomEnd = 32.dp, topEnd = 32.dp)),
         onClick = {
             coroutineScope.launch {
                 pagerState.animateScrollToPage(pageIndex)

@@ -23,6 +23,8 @@ import com.kin.easynotes.presentation.navigation.AppNavHost
 import com.kin.easynotes.presentation.navigation.NavRoutes
 import com.kin.easynotes.presentation.screens.settings.model.SettingsViewModel
 import com.kin.easynotes.presentation.theme.NotesTheme
+import com.kin.easynotes.presentation.theme.komiGridPaper
+import androidx.compose.ui.Modifier
 import com.kin.easynotes.security.SignatureVerifier
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -97,7 +99,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             NotesTheme(settingsViewModel!!) {
-                Surface(color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    color = MaterialTheme.colorScheme.background,
+                    modifier = Modifier.komiGridPaper()
+                ) {
                     navController = rememberNavController()
 
                     AppNavHost(

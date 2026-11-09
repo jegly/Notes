@@ -17,6 +17,10 @@
 
 package com.kin.easynotes.presentation.screens.settings.widgets
 
+import com.kin.easynotes.presentation.theme.komiShape
+import com.kin.easynotes.presentation.theme.komiShadow
+import com.kin.easynotes.presentation.theme.komiBorder
+
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -104,8 +108,10 @@ fun SettingsBox(
         Box(
             modifier = Modifier
                 .padding(bottom = dimensionResource(id = R.dimen.card_padding_bottom))
-                .clip(radius ?: RoundedCornerShape(6.dp))
+                .komiShadow()
+                .clip(radius ?: komiShape(RoundedCornerShape(6.dp)))
                 .background(MaterialTheme.colorScheme.surfaceContainer)
+                .komiBorder()
                 .clickable {
                     handleAction(
                         context,
